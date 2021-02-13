@@ -60,29 +60,22 @@ void Field::run() {
             if (event.type == sf::Event::EventType::MouseButtonPressed) {
                 if(!this->mouse_pressed) {
                     this->mouse_pressed = true;
-                    fpt x = event.mouseMove.x;
-                    fpt y = event.mouseMove.y;
-                    pos_x[n] = x;
-                    pos_y[n] = y;
                 }
             }
             if(event.type == sf::Event::EventType::MouseButtonReleased) {
                 if(this->mouse_pressed) {
                     this->mouse_pressed = false;
-                    fpt x = event.mouseMove.x;
-                    fpt y = event.mouseMove.y;
-                    pos_x[n] = x;
-                    pos_y[n] = y;
                 }
             }
         }
 
         if(mouse_pressed) {
-            fpt x = event.mouseMove.x;
-            fpt y = event.mouseMove.y;
+            fpt x = sf::Mouse::getPosition().x - window->getPosition().x;
+            fpt y = sf::Mouse::getPosition().y - window->getPosition().y;
             pos_x[n] = x;
             pos_y[n] = y;
         }
+
         simulate();
 
         window->clear(sf::Color::Black);
