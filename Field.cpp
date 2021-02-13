@@ -15,28 +15,27 @@ void Field::simulate() {
 #pragma omp parallel for
     for (uint32_t i = 0; i < n; i++) {
         sf::Vector2<fpt> g_force{g_force_x[i], g_force_y[i]};
-        auto m_position = sf::Vector2<fpt>(pos_x[i], pos_y[i]);
-        auto m_speed = sf::Vector2<fpt>(v_x[i], v_y[i]);
 
-        auto new_position = m_position + m_speed * dt + 0.5 * g_force / m[i] * pow(dt, 2);
-        auto new_speed = (new_position - m_position) / dt;
+        auto new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x[i] / m[i] * pow(dt, 2);
+        auto new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y[i] / m[i] * pow(dt, 2);
+        auto new_speed_x = (new_position_x - pos_x[i]) / dt;
+        auto new_speed_y = (new_position_y - pos_y[i]) / dt;
 
-        if(new_speed.x == new_speed.x) {
-            v_x[i] = new_speed.x - new_speed.x * 0.025;
+        if(new_speed_x == new_speed_x) {
+            v_x[i] = new_speed_x - new_speed_x * 0.025;
         }
-        if(new_speed.y == new_speed.y) {
-            v_y[i] = new_speed.y - new_speed.y * 0.025;
+        if(new_speed_y == new_speed_y) {
+            v_y[i] = new_speed_y - new_speed_y * 0.025;
         }
-        if (new_position.x < 0 || new_position.x > WINDOW_WIDTH) {
+        if (new_position_x < 0 || new_position_x > WINDOW_WIDTH) {
             v_x[i] = -v_x[i];
         }
 
-        // Collision top or bottom
-        if (new_position.y < 0 || new_position.y > WINDOW_HEIGHT) {
+        if (new_position_y < 0 || new_position_y > WINDOW_HEIGHT) {
             v_y[i] = -v_y[i];
         }
-        pos_x[i] = new_position.x;
-        pos_y[i] = new_position.y;
+        pos_x[i] = new_position_x;
+        pos_y[i] = new_position_y;
     }
 
 }
@@ -60,7 +59,6 @@ void Field::run() {
             }
             if (event.type == sf::Event::EventType::MouseButtonPressed) {
                 if(!this->mouse_pressed) {
-                    std::cout << "Mouse pressed" << std::endl;
                     this->mouse_pressed = true;
                     fpt x = event.mouseMove.x;
                     fpt y = event.mouseMove.y;
@@ -70,7 +68,6 @@ void Field::run() {
             }
             if(event.type == sf::Event::EventType::MouseButtonReleased) {
                 if(this->mouse_pressed) {
-                    std::cout << "Mouse released" << std::endl;
                     this->mouse_pressed = false;
                     fpt x = event.mouseMove.x;
                     fpt y = event.mouseMove.y;
