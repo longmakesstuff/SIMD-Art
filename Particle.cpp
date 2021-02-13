@@ -15,14 +15,14 @@ void Particle::summarize_g_force(const std::vector<Particle> &particles, bool mo
     sf::Vector2<fpt> this_p(pos_x[index], pos_y[index]);
     fpt this_m = m[index];
 
-    uint32_t to_iterate = mouse_pressed ? n + 1 : n;
+    uint32_t to_iterate = mouse_pressed ? 1 : 0;
     for (uint32_t i = 0; i < to_iterate; i++) {
         Particle particle = particles[i];
         if (particle != *this) {
             fpt other_m = m[particle.index];
             sf::Vector2<fpt> other_p(pos_x[particle.index], pos_y[particle.index]);
             sf::Vector2<fpt> direction = other_p - this_p;
-            fpt distance = norm(direction);
+            fpt distance = MAX(30.0, norm(direction));
             g_force += other_m * (direction / std::pow(distance, 3));
         }
     }

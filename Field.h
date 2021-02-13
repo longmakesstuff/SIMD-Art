@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>
 #include <vector>
+#include <omp.h>
 #include "Utils.h"
 #include "Particle.h"
 

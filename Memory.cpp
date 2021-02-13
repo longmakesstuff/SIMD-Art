@@ -19,9 +19,9 @@ void initialize_memory() {
         v_y[i] = 0.0;
         g_force_x[i] = 0.0;
         g_force_y[i] = 0.0;
-        m[i] = 10000;
+        m[i] = 10;
     }
 
 
-    m[n] = 10000000000000;
+    m[n] = 100000000000000;
 }

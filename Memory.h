@@ -4,7 +4,7 @@
 #include <random>
 #include "Utils.h"
 
-constexpr uint32_t n = 2;
+constexpr uint32_t n = 10000;
 
 extern fpt * pos_x;
 extern fpt * pos_y;

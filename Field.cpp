@@ -7,10 +7,12 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
 }
 
 void Field::simulate() {
+#pragma omp parallel for
     for (uint32_t i = 0; i < n; i++) {
-        particles[i].summarize_g_force(particles, this->mouse_pressed);
+        particles[i].summarize_g_force(std::vector<Particle>{particles.back()}, this->mouse_pressed);
     }
 
+#pragma omp parallel for
     for (uint32_t i = 0; i < n; i++) {
         sf::Vector2<fpt> g_force{g_force_x[i], g_force_y[i]};
         auto m_position = sf::Vector2<fpt>(pos_x[i], pos_y[i]);
@@ -20,10 +22,10 @@ void Field::simulate() {
         auto new_speed = (new_position - m_position) / dt;
 
         if(new_speed.x == new_speed.x) {
-            v_x[i] = new_speed.x;
+            v_x[i] = new_speed.x - new_speed.x * 0.025;
         }
         if(new_speed.y == new_speed.y) {
-            v_y[i] = new_speed.y;
+            v_y[i] = new_speed.y - new_speed.y * 0.025;
         }
         if (new_position.x < 0 || new_position.x > WINDOW_WIDTH) {
             v_x[i] = -v_x[i];
@@ -60,8 +62,8 @@ void Field::run() {
                 if(!this->mouse_pressed) {
                     std::cout << "Mouse pressed" << std::endl;
                     this->mouse_pressed = true;
-                    fpt x = event.mouseButton.x;
-                    fpt y = event.mouseButton.y;
+                    fpt x = event.mouseMove.x;
+                    fpt y = event.mouseMove.y;
                     pos_x[n] = x;
                     pos_y[n] = y;
                 }
@@ -70,10 +72,20 @@ void Field::run() {
                 if(this->mouse_pressed) {
                     std::cout << "Mouse released" << std::endl;
                     this->mouse_pressed = false;
+                    fpt x = event.mouseMove.x;
+                    fpt y = event.mouseMove.y;
+                    pos_x[n] = x;
+                    pos_y[n] = y;
                 }
             }
         }
 
+        if(mouse_pressed) {
+            fpt x = event.mouseMove.x;
+            fpt y = event.mouseMove.y;
+            pos_x[n] = x;
+            pos_y[n] = y;
+        }
         simulate();
 
         window->clear(sf::Color::Black);
