@@ -11,8 +11,8 @@
 #define PI 3.14159265
 #define DEG2RAD(x) ((x)*PI/180)
 #define RAD2DEG(x) ((x)*180/PI)
-#define WINDOW_WIDTH 1500
-#define WINDOW_HEIGHT 1500
+#define WINDOW_WIDTH 1000
+#define WINDOW_HEIGHT 1000
 #define CENTER sf::Vector2f{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}
 #define UGC 0.0000006674f
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))

@@ -7,11 +7,13 @@ fpt * v_y = new fpt[n + 1];
 fpt * g_force_x = new fpt[n + 1];
 fpt * g_force_y = new fpt[n + 1];
 fpt * m = new fpt[n + 1];
+sf::Color * colors = new sf::Color[n];
+sf::Color * texture = new sf::Color[WINDOW_HEIGHT * WINDOW_WIDTH];
 
 void initialize_memory() {
-
     std::mt19937 rng;
     std::uniform_real_distribution<fpt> pos(400.0, 600.0);
+
     for (uint32_t i = 0; i < n; i++) {
         pos_x[i] = pos(rng);
         pos_y[i] = pos(rng);
@@ -19,9 +21,10 @@ void initialize_memory() {
         v_y[i] = 0.0;
         g_force_x[i] = 0.0;
         g_force_y[i] = 0.0;
-        m[i] = 10;
+        m[i] = 10000;
+        colors[i].g = 255;
+        colors[i].b = 255;
     }
-
 
     m[n] = 100000000000000;
 }

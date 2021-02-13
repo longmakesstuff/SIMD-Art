@@ -5,16 +5,16 @@
 #include <vector>
 #include <omp.h>
 #include "Utils.h"
-#include "Particle.h"
+#include "Memory.h"
 
 class Field {
-    std::vector<Particle> particles;
     sf::Event event{};
     sf::RenderWindow *window;
     sf::Font *font;
     float dt = 0.f;
     FPS fps;
     bool mouse_pressed = false;
+    bool texture_mapping = true;
 
     sf::Clock clock;
 
