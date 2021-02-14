@@ -309,3 +309,27 @@ bool Field::isTextureMapping() const {
 void Field::setTextureMapping(bool textureMapping) {
     texture_mapping = textureMapping;
 }
+
+fpt Field::getDragCoefficient() const {
+    return drag_coefficient;
+}
+
+void Field::setDragCoefficient(fpt dragCoefficient) {
+    drag_coefficient = dragCoefficient;
+}
+
+uint32_t Field::getMouseMass() const {
+    return mouse_mass;
+}
+
+void Field::setMouseMass(uint32_t mouseMass) {
+    mouse_mass = mouseMass;
+}
+
+uint32_t Field::getParticleMass() const {
+    return particle_mass;
+}
+
+void Field::setParticleMass(uint32_t particleMass) {
+    particle_mass = particleMass;
+}

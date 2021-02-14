@@ -21,9 +21,15 @@ private:
     Field field;
     void info_text();
     tgui::GuiSFML * widgets;
+    tgui::CheckBox::Ptr texture_mapping;
     tgui::Label::Ptr minimal_distance_label;
     tgui::Slider::Ptr minimal_distance;
-    tgui::CheckBox::Ptr texture_mapping;
+    tgui::Label::Ptr drag_coefficient_label;
+    tgui::Slider::Ptr drag_coefficient;
+    tgui::Label::Ptr mouse_mass_label;
+    tgui::Slider::Ptr mouse_mass;
+    tgui::Label::Ptr particles_mass_label;
+    tgui::Slider::Ptr particles_mass;
 public:
     GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets);
 

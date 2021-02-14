@@ -89,4 +89,16 @@ public:
     [[nodiscard]] bool isTextureMapping() const;
 
     void setTextureMapping(bool textureMapping);
+
+    [[nodiscard]] fpt getDragCoefficient() const;
+
+    void setDragCoefficient(fpt dragCoefficient);
+
+    [[nodiscard]] uint32_t getMouseMass() const;
+
+    void setMouseMass(uint32_t mouseMass);
+
+    [[nodiscard]] uint32_t getParticleMass() const;
+
+    void setParticleMass(uint32_t particleMass);
 };
