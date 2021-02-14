@@ -23,8 +23,8 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
     }
     // Loading texture
     sf::Image image;
-    if (!image.loadFromFile("texture.jpg")) {
-        LOG_ERROR("Can not load texture.jpg. Exit now")
+    if (!image.loadFromFile(texture_file)) {
+        LOG_ERROR("Can not load heart.jpg. Exit now")
         std::exit(1);
     }
 
@@ -37,7 +37,7 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
     }
 
     std::mt19937 rng;
-    std::uniform_real_distribution<fpt> pos(100.0, 200.0);
+    std::uniform_real_distribution<fpt> pos(900.0, 1000.0);
     // Initialize random position
     for (uint32_t i = 0; i < n; i++) {
         pos_x[i] = pos(rng);
@@ -51,10 +51,10 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
 
     // Position for mouse
     // We want mouse to dominates
-    masses[n] = 10000000;
+    masses[n] = mouse_mass;
 }
 
-void Field::intrinsic_simulate() {
+void Field::simd_simulate() {
     TimeIt simulation("SIMD Simulation");
 
     // Delta^2
@@ -90,8 +90,11 @@ void Field::intrinsic_simulate() {
 
         // Loading masses
         simd_fpt masses_ = simd_load(masses + k);
-        if (mouse_pressed) {
 
+        fpt g_force_x[block_size]{0, 0, 0, 0, 0, 0, 0, 0};
+        fpt g_force_y[block_size]{0, 0, 0, 0, 0, 0, 0, 0};
+
+        if (mouse_pressed) {
             // Calculate distance
             simd_fpt diff_pos_x_ = simd_sub(mouse_pos_x_, pos_x_);
             simd_fpt diff_pos_y_ = simd_sub(mouse_pos_y_, pos_y_);
@@ -110,18 +113,27 @@ void Field::intrinsic_simulate() {
             g_force_x_ = simd_mul(g_force_x_, masses_);
             g_force_y_ = simd_mul(g_force_y_, masses_);
 
+            std::memcpy(g_force_x, (fpt * )&g_force_x_, block_size * sizeof(fpt));
+            std::memcpy(g_force_y, (fpt * )&g_force_y_, block_size * sizeof(fpt));
         }
 
         // Calculating new positions
-        new_position_x_ = simd_add(simd_add(pos_x_, simd_mul(v_x_, dt_)), simd_div(simd_mul(c_0_5_, g_force_x_), simd_mul(masses_, dt_2_)));
-        new_position_y_ = simd_add(simd_add(pos_y_, simd_mul(v_y_, dt_)), simd_div(simd_mul(c_0_5_, g_force_y_), simd_mul(masses_, dt_2_)));
+        //new_position_x_ = simd_div(simd_mul(c_0_5_, g_force_x_), simd_mul(masses_, dt_2_));
+        //new_position_x_ = simd_add(new_position_x_, simd_mul(v_x_, dt_));
+        //new_position_x_ = simd_add(new_position_x_, pos_x_);
 
-        fpt * new_position_x_s = (fpt *)&new_position_x_;
-        fpt * new_position_y_s = (fpt *)&new_position_y_;
+        //new_position_y_ = simd_div(simd_mul(c_0_5_, g_force_y_), simd_mul(masses_, dt_2_));
+        //new_position_y_ = simd_add(new_position_y_, simd_mul(v_y_, dt_));
+        //new_position_y_ = simd_add(new_position_y_, pos_y_);
+
+        //fpt * new_position_x_s = (fpt *)&new_position_x_;
+        //fpt * new_position_y_s = (fpt *)&new_position_y_;
 
         for (uint32_t i = k; i < k + block_size; i++) {
-            fpt new_position_x = new_position_x_s[i - k];
-            fpt new_position_y = new_position_y_s[i - k];
+            fpt new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x[i - k] / masses[i] * dt_2;
+            fpt new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y[i - k] / masses[i] * dt_2;
+            //fpt new_position_x = new_position_x_s[i - k];
+            //fpt new_position_y = new_position_y_s[i - k];
 
             if (new_position_x != pos_x[i]) {
                 auto new_speed_x = (new_position_x - pos_x[i]) / dt;
@@ -163,7 +175,7 @@ void Field::intrinsic_simulate() {
     simulation.end();
 }
 
-void Field::simulate() {
+void Field::naive_simulate() {
     TimeIt simulation("Simulation");
     fpt delta_t_2 = pow(dt, 2);
 
@@ -253,9 +265,9 @@ void Field::run() {
             pos_y[n] = y;
         }
 
-        intrinsic_simulate();
-        //simulate();
-        window->clear(sf::Color::Black);
+        simd_simulate();
+        //naive_simulate();
+        window->clear(sf::Color::White);
 
         TimeIt rendering("Rendering");
         v_buffer.update(v_arr);

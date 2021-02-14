@@ -28,14 +28,17 @@ class Field {
     float dt = 0.f;
     FPS fps;
     bool mouse_pressed = false;
-    constexpr static bool texture_mapping = false;
+    constexpr static bool texture_mapping = true;
     sf::Clock clock;
 
     static constexpr uint32_t block_size = 8;
 
-    static constexpr uint32_t blocks = 200000;
+    static constexpr uint32_t blocks = 100000;
 
     static constexpr uint32_t n = block_size * blocks;
+    static constexpr uint32_t mouse_mass = 25000000;
+
+    const std::string texture_file = "rose.jpg";
 
     alignas(32) fpt *pos_x;
     alignas(32) fpt *pos_y;
@@ -47,9 +50,9 @@ class Field {
     sf::VertexBuffer v_buffer{sf::Points, sf::VertexBuffer::Static};
     sf::Vertex * v_arr;
 
-    void simulate();
+    void naive_simulate();
 
-    void intrinsic_simulate();
+    void simd_simulate();
 
     void info_text();
 

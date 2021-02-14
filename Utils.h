@@ -42,21 +42,6 @@ public:
     void update();
 };
 
-inline fpt Q_rsqrt(fpt n) {
-    n = 1.0f / n;
-    long i;
-    float x, y;
-
-    x = n * 0.5f;
-    y = n;
-    i = *(long *) &y;
-    i = 0x5f3759df - (i >> 1);
-    y = *(float *) &i;
-    y = y * (1.5f - (x * y * y));
-
-    return y;
-}
-
 template<typename Iter, typename RandomGenerator>
 Iter select_randomly(Iter start, Iter end, RandomGenerator &g) {
     std::uniform_int_distribution<> dis(0, std::distance(start, end) - 1);
