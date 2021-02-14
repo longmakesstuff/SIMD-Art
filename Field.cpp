@@ -80,17 +80,17 @@ void Field::intrinsic_simulate() {
         simd_fpt new_position_x_ = simd_load(pos_x + k);
         simd_fpt new_position_y_ = simd_load(pos_y + k);
 
+        // Loading current positions
+        simd_fpt pos_x_ = simd_load(pos_x + k);
+        simd_fpt pos_y_ = simd_load(pos_y + k);
+
+        // Loading current speed vectors
+        simd_fpt v_x_ = simd_load(v_x + k);
+        simd_fpt v_y_ = simd_load(v_y + k);
+
+        // Loading masses
+        simd_fpt masses_ = simd_load(masses + k);
         if (mouse_pressed) {
-            // Loading current positions
-            simd_fpt pos_x_ = simd_load(pos_x + k);
-            simd_fpt pos_y_ = simd_load(pos_y + k);
-
-            // Loading current speed vectors
-            simd_fpt v_x_ = simd_load(v_x + k);
-            simd_fpt v_y_ = simd_load(v_y + k);
-
-            // Loading masses
-            simd_fpt masses_ = simd_load(masses + k);
 
             // Calculate distance
             simd_fpt diff_pos_x_ = simd_sub(mouse_pos_x_, pos_x_);
@@ -110,10 +110,11 @@ void Field::intrinsic_simulate() {
             g_force_x_ = simd_mul(g_force_x_, masses_);
             g_force_y_ = simd_mul(g_force_y_, masses_);
 
-            // Calculating new positions
-            new_position_x_ = simd_add(simd_add(pos_x_, simd_mul(v_x_, dt_)), simd_div(simd_mul(c_0_5_, g_force_x_), simd_mul(masses_, dt_2_)));
-            new_position_y_ = simd_add(simd_add(pos_y_, simd_mul(v_y_, dt_)), simd_div(simd_mul(c_0_5_, g_force_y_), simd_mul(masses_, dt_2_)));
         }
+
+        // Calculating new positions
+        new_position_x_ = simd_add(simd_add(pos_x_, simd_mul(v_x_, dt_)), simd_div(simd_mul(c_0_5_, g_force_x_), simd_mul(masses_, dt_2_)));
+        new_position_y_ = simd_add(simd_add(pos_y_, simd_mul(v_y_, dt_)), simd_div(simd_mul(c_0_5_, g_force_y_), simd_mul(masses_, dt_2_)));
 
         fpt * new_position_x_s = (fpt *)&new_position_x_;
         fpt * new_position_y_s = (fpt *)&new_position_y_;
@@ -172,12 +173,14 @@ void Field::simulate() {
         fpt g_force_y = 0;
 
         if (mouse_pressed) {
+            // Calculate distance
             fpt diff_x = pos_x[n] - pos_x[i];
             fpt diff_y = pos_y[n] - pos_y[i];
 
             fpt distance = std::sqrt(diff_x * diff_x + diff_y * diff_y);
             distance = MAX(50.0, distance);
 
+            // Calculate G-Forces
             g_force_x = masses[n] * (diff_x / std::pow(distance, 3)) * masses[i];
             g_force_y = masses[n] * (diff_y / std::pow(distance, 3)) * masses[i];
 
