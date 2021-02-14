@@ -95,12 +95,19 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
     textures = tgui::ListBox::create();
     textures->setPosition(WIDGET_POS_X, get_next_widget_position());
     textures->setWidth(WIDGET_WIDTH);
-    textures->addItem("armstrong.jpg");
-    textures->addItem(field.getTextureFile());
     textures->setSelectedItem(field.getTextureFile());
     textures->onItemSelect([&](){
         field.setTextureFile(textures->getSelectedItem().toStdString());
     });
+
+    // Search for every texture
+    for (const auto & entry : std::filesystem::directory_iterator(".")) {
+        std::string file_path = entry.path().string();
+        if(file_path.ends_with(".png") || file_path.ends_with(".jpg") || file_path.ends_with(".jpeg")){
+            textures->addItem(file_path);
+        }
+    }
+    textures->addItem(field.getTextureFile());
 
     widgets->add(texture_mapping);
     widgets->add(minimal_distance_label);

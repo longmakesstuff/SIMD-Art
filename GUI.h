@@ -8,6 +8,7 @@
 #include <cstring>
 #include <TGUI/TGUI.hpp>
 #include <array>
+#include <filesystem>
 #include "Utils.h"
 #include "TimeIt.h"
 #include "Simd.h"
