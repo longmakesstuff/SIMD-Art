@@ -9,11 +9,8 @@
 #include <iterator>
 #include <immintrin.h>
 
-#define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 1000
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
-
 
 #define LOG_DEBUG(x) do { std::cout << "[DEBUG] " << __FILE__ << ":" << __LINE__ << ":" << __func__ << "() " << x << std::endl; } while (0);
 
@@ -26,6 +23,9 @@
 #define NOW std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()).count()
 
 typedef float fpt;
+
+constexpr uint32_t WINDOW_WIDTH = 1000;
+constexpr uint32_t WINDOW_HEIGHT = 1000;
 
 class FPS {
 public:
@@ -91,8 +91,4 @@ inline sf::Vector2<fpt> operator*(const sf::Vector2<fpt> &lhs, fpt scalar) {
     ret.x *= scalar;
     ret.y *= scalar;
     return ret;
-}
-
-inline __m256 _mm256_load(const float * ptr) {
-    return _mm256_set_ps(ptr[7], ptr[6], ptr[5],ptr[4],ptr[3],ptr[2],ptr[1],ptr[0]);
 }

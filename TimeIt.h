@@ -1,10 +1,5 @@
-//
-// Created by long on 14.02.21.
-//
-
 #ifndef GRAVITATION_TIMEIT_H
 #define GRAVITATION_TIMEIT_H
-
 
 #include <string>
 #include <sstream>
@@ -29,4 +24,4 @@ private:
 
 
 
-#endif //GRAVITATION_TIMEIT_H
+#endif

@@ -15,19 +15,9 @@ else ()
     message(ERROR_FATAL "Can not find SFML")
 endif ()
 
-add_executable(particle_system main.cpp Field.h Field.cpp Utils.cpp Utils.h TimeIt.cpp TimeIt.h)
-add_executable(test test.cpp)
+add_executable(particle_system main.cpp Field.h Field.cpp Utils.cpp Utils.h TimeIt.cpp TimeIt.h Simd.h)
 
 target_link_libraries(particle_system
-        ${SFML_LIBRARIES}
-        ${SFML_DEPENDENCIES}
-        PUBLIC OpenMP::OpenMP_CXX
-        sfml-graphics
-        sfml-window
-        sfml-system
-        m)
-
-target_link_libraries(test
         ${SFML_LIBRARIES}
         ${SFML_DEPENDENCIES}
         PUBLIC OpenMP::OpenMP_CXX

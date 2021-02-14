@@ -13,8 +13,8 @@ int main() {
         std::exit(1);
     }
 
-    Field universe{&window, &font};
-    universe.run();
+    Field field{&window, &font};
+    field.run();
 
     return 0;
 }
