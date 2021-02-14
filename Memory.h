@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "Utils.h"
 
+// How many particles
 constexpr uint32_t n = 500000;
 
 extern fpt * pos_x;

@@ -7,7 +7,7 @@
 int main() {
     initialize_memory();
 
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Newton's gravitation", sf::Style::Default);
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Particle system", sf::Style::Default);
     window.setFramerateLimit(60);
 
     sf::Font font;

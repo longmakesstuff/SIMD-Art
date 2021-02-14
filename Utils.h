@@ -8,13 +8,8 @@
 #include <iostream>
 #include  <iterator>
 
-#define PI 3.14159265
-#define DEG2RAD(x) ((x)*PI/180)
-#define RAD2DEG(x) ((x)*180/PI)
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 1000
-#define CENTER sf::Vector2f{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}
-#define UGC 0.0000006674f
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
@@ -43,15 +38,7 @@ private:
     sf::Clock clock;
 
 public:
-    void update() {
-        if (clock.getElapsedTime().asSeconds() >= 1.f) {
-            fps = frame;
-            frame = 0;
-            clock.restart();
-        }
-
-        ++frame;
-    }
+    void update();
 };
 
 template<typename Iter, typename RandomGenerator>
@@ -68,14 +55,39 @@ Iter select_randomly(Iter start, Iter end) {
     return select_randomly(start, end, gen);
 }
 
-fpt norm(const sf::Vector2<fpt> &vec);
+inline fpt norm(const sf::Vector2<fpt> &vec){
+    return std::sqrt(std::pow(vec.x, 2.0f) + std::pow(vec.y, 2.0f));
+}
 
-std::ostream &operator<<(std::ostream &os, const sf::Vector2<fpt> &vector);
+inline std::ostream &operator<<(std::ostream &os, const sf::Vector2<fpt> &vector){
+    os << "[x = " << vector.x << ", y = " << vector.y << "]";
+    return os;
+}
 
-sf::Vector2<fpt> operator+(const sf::Vector2<fpt> &lhs, fpt scalar);
+inline sf::Vector2<fpt> operator+(const sf::Vector2<fpt> &lhs, fpt scalar) {
+    sf::Vector2<fpt> ret(lhs);
+    ret.x += scalar;
+    ret.y += scalar;
+    return ret;
+}
 
-sf::Vector2<fpt> operator-(const sf::Vector2<fpt> &lhs, fpt scalar);
+inline sf::Vector2<fpt> operator-(const sf::Vector2<fpt> &lhs, fpt scalar) {
+    sf::Vector2<fpt> ret(lhs);
+    ret.x -= scalar;
+    ret.y -= scalar;
+    return ret;
+}
 
-sf::Vector2<fpt> operator/(const sf::Vector2<fpt> &lhs, fpt scalar);
+inline sf::Vector2<fpt> operator/(const sf::Vector2<fpt> &lhs, fpt scalar){
+    sf::Vector2<fpt> ret(lhs);
+    ret.x /= scalar;
+    ret.y /= scalar;
+    return ret;
+}
 
-sf::Vector2<fpt> operator*(const sf::Vector2<fpt> &lhs, fpt scalar);
+inline sf::Vector2<fpt> operator*(const sf::Vector2<fpt> &lhs, fpt scalar){
+    sf::Vector2<fpt> ret(lhs);
+    ret.x *= scalar;
+    ret.y *= scalar;
+    return ret;
+}

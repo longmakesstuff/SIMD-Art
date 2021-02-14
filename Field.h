@@ -15,7 +15,7 @@ class Field {
     float dt = 0.f;
     FPS fps;
     bool mouse_pressed = false;
-    bool texture_mapping = true;
+    constexpr static bool texture_mapping = false;
 
     sf::Clock clock;
 

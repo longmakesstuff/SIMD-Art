@@ -17,9 +17,9 @@ else ()
     message(ERROR_FATAL "Can not find SFML")
 endif ()
 
-add_executable(gravitation main.cpp Field.h Field.cpp Utils.cpp Utils.h Memory.h Memory.cpp TimeIt.cpp TimeIt.h)
+add_executable(particle_system main.cpp Field.h Field.cpp Utils.cpp Utils.h Memory.h Memory.cpp TimeIt.cpp TimeIt.h)
 
-target_link_libraries(gravitation
+target_link_libraries(particle_system
         ${SFML_LIBRARIES}
         ${SFML_DEPENDENCIES}
         PUBLIC OpenMP::OpenMP_CXX

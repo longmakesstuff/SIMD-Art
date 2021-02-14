@@ -13,16 +13,8 @@
 
 class TimeIt {
 public:
-    /**
-     * Constructor
-     *
-     * @param text name of the benchmarking case
-     */
     explicit TimeIt(const std::string &text);
 
-    /**
-     * End the latest benchmarking case
-     */
     void end();
 
     static std::string format_number(uint64_t number);
