@@ -11,8 +11,11 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
     masses = new fpt[n + 1];
     colors = new sf::Color[n];
     texture = new sf::Color[WINDOW_HEIGHT * WINDOW_WIDTH];
-    
-    if(n % block_size != 0) {
+
+    v_buffer.create(n);
+    v_arr = new sf::Vertex[n];
+
+    if (n % block_size != 0) {
         LOG_ERROR("Illegal count of particles! Must be a divider of 8. Exit now!")
         std::exit(1);
     }
@@ -70,7 +73,7 @@ void Field::intrinsic_simulate() {
     __m256 mouse_mass_ = _mm256_set1_ps(masses[n]);
 
 #pragma omp parallel for
-    for(uint32_t k = 0; k < n; k += block_size) {
+    for (uint32_t k = 0; k < n; k += block_size) {
         if (mouse_pressed) {
             // Loading current positions
             __m256 pos_x_ = _mm256_load_ps(pos_x + k);
@@ -141,12 +144,12 @@ void Field::intrinsic_simulate() {
 
             colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
 
-            pixels[i].position = sf::Vector2f{new_position_x, new_position_y};
+            v_arr[i].position = sf::Vector2f{new_position_x, new_position_y};
             if (!texture_mapping) {
-                pixels[i].color = colors[i];
+                v_arr[i].color = colors[i];
             } else {
-                pixels[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
-                                              WINDOW_HEIGHT * WINDOW_HEIGHT)];
+                v_arr[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
+                                             WINDOW_HEIGHT * WINDOW_HEIGHT)];
             }
 
         }
@@ -204,12 +207,12 @@ void Field::simulate() {
 
         colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
 
-        pixels[i].position = sf::Vector2f{new_position_x, new_position_y};
+        v_arr[i].position = sf::Vector2f{new_position_x, new_position_y};
         if (!texture_mapping) {
-            pixels[i].color = colors[i];
+            v_arr[i].color = colors[i];
         } else {
-            pixels[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
-                                          WINDOW_HEIGHT * WINDOW_HEIGHT)];
+            v_arr[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
+                                         WINDOW_HEIGHT * WINDOW_HEIGHT)];
         }
 
     }
@@ -246,7 +249,9 @@ void Field::run() {
         window->clear(sf::Color::Black);
 
         TimeIt rendering("Rendering");
-        window->draw(pixels);
+        v_buffer.update(v_arr);
+        //window->draw(pixels);
+        window->draw(v_buffer);
         info_text();
         window->display();
         dt = clock.restart().asSeconds();

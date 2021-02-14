@@ -6,6 +6,7 @@
 #include <omp.h>
 #include <immintrin.h>
 #include <cstring>
+#include <array>
 #include "Utils.h"
 #include "TimeIt.h"
 
@@ -34,7 +35,8 @@ class Field {
     alignas(32) fpt *masses;
     sf::Color *colors;
     sf::Color *texture;
-    sf::VertexArray pixels{sf::Points, n};
+    sf::VertexBuffer v_buffer{sf::Points, sf::VertexBuffer::Static};
+    sf::Vertex * v_arr;
 
     void simulate();
 
