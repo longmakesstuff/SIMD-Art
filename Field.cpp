@@ -1,7 +1,7 @@
 #include "Field.h"
 
 
-Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(font) {
+Field::Field() {
     // Sanity check
     if (n % block_size != 0) {
         LOG_ERROR("Illegal count of particles! Must be a divider of 8. Exit now!")
@@ -268,56 +268,36 @@ void Field::naive_simulate() {
     simulation.end();
 }
 
-void Field::run() {
-    while (window->isOpen()) {
-        while (window->pollEvent(event)) {
-            if (event.type == sf::Event::EventType::Closed) {
-                std::exit(0);
-            }
-            if (event.type == sf::Event::EventType::MouseButtonPressed) {
-                if (!this->mouse_pressed) {
-                    this->mouse_pressed = true;
-                }
-            }
-            if (event.type == sf::Event::EventType::MouseButtonReleased) {
-                if (this->mouse_pressed) {
-                    this->mouse_pressed = false;
-                }
-            }
-        }
-
-        if (mouse_pressed) {
-            fpt x = sf::Mouse::getPosition().x - window->getPosition().x;
-            fpt y = sf::Mouse::getPosition().y - window->getPosition().y;
-            pos_x[n] = x;
-            pos_y[n] = y;
-        }
-
-        simd_simulate();
-
-        // Turn on this if your CPU does not support the operation
-        //naive_simulate();
-        if (texture_mapping) {
-            window->clear(sf::Color::White);
-        } else {
-            window->clear(sf::Color::Black);
-        }
-        TimeIt rendering("Rendering");
-        vertex_buffer.update(vertices);
-        window->draw(vertex_buffer);
-        info_text();
-        window->display();
-        dt = clock.restart().asSeconds();
-        rendering.end();
+void Field::run(sf::RenderWindow *window) {
+    if (mouse_pressed) {
+        fpt x = sf::Mouse::getPosition().x - window->getPosition().x;
+        fpt y = sf::Mouse::getPosition().y - window->getPosition().y;
+        pos_x[n] = x;
+        pos_y[n] = y;
     }
+
+    simd_simulate();
+
+    // Turn on this if your CPU does not support the operation
+    //naive_simulate();
+    if (texture_mapping) {
+        window->clear(sf::Color::White);
+    } else {
+        window->clear(sf::Color::Black);
+    }
+
+    TimeIt rendering("Rendering");
+    vertex_buffer.update(vertices);
+    window->draw(vertex_buffer);
+    window->display();
+    dt = clock.restart().asSeconds();
+    rendering.end();
 }
 
-void Field::info_text() {
-    std::stringstream ss = std::stringstream{};
-    fps.update();
-    ss << "FPS: " << fps.getFPS();
-    sf::Text fpsText{ss.str(), *font, 10};
-    fpsText.setPosition(10, 10);
-    fpsText.setFillColor(sf::Color::Black);
-    window->draw(fpsText);
+bool Field::isMousePressed() const {
+    return mouse_pressed;
+}
+
+void Field::setMousePressed(bool mousePressed) {
+    mouse_pressed = mousePressed;
 }

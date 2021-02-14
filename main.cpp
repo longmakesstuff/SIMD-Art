@@ -1,7 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Utils.h"
-#include "Field.h"
+#include "GUI.h"
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Particle system", sf::Style::Default);
@@ -13,8 +13,8 @@ int main() {
         std::exit(1);
     }
 
-    Field field{&window, &font};
-    field.run();
+    GUI gui{&window, &font};
+    gui.main_loop();
 
     return 0;
 }

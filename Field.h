@@ -13,10 +13,6 @@
 
 class Field {
     // SFML specific stuff
-    sf::Event event{};
-    sf::RenderWindow *window;
-    sf::Font *font;
-    FPS fps;
     sf::Clock clock;
 
     // Delta time between two simulations
@@ -26,7 +22,7 @@ class Field {
     bool mouse_pressed = false;
 
     // Do we want to use texture mapping?
-    constexpr static bool texture_mapping = false;
+    constexpr static bool texture_mapping = true;
 
     // SIMD instruction size
     static constexpr uint32_t block_size = 8;
@@ -75,15 +71,14 @@ class Field {
      */
     void simd_simulate();
 
-    /**
-     * Information of FPS
-     */
-    void info_text();
-
 public:
-    explicit Field(sf::RenderWindow *window, sf::Font *font);
+    explicit Field();
 
     virtual ~Field();
 
-    void run();
+    void run(sf::RenderWindow *window);
+
+    bool isMousePressed() const;
+
+    void setMousePressed(bool mousePressed);
 };

@@ -6,6 +6,9 @@
 #include <chrono>
 #include <iostream>
 
+/**
+ * Timing class for benchmarking purpose
+ */
 class TimeIt {
 public:
     explicit TimeIt(const std::string &text);
