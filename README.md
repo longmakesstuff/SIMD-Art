@@ -1,3 +1,7 @@
+Link the YouTube video demonstration: https://www.youtube.com/watch?v=Bjwml32dxhU 
+
+The compression algorithm does not work well on this colorful video, so I can not upload the full version as GIF.
+
 ### The what
 
 This is one of my latest projects with more of a artistic orientation, but also with a very technical nature. It helped me
