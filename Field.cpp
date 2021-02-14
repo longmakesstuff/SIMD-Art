@@ -157,33 +157,33 @@ void Field::simd_simulate() {
             // Update position and speed
             if (new_position_x != pos_x[i]) {
                 auto new_speed_x = (new_position_x - pos_x[i]) / dt;
-                v_x[i] = new_speed_x - new_speed_x * drag_coef;
+                v_x[i] = new_speed_x - new_speed_x * drag_coefficient;
                 pos_x[i] = new_position_x;
             }
             if (new_position_y != pos_y[i]) {
                 auto new_speed_y = (new_position_y - pos_y[i]) / dt;
-                v_y[i] = new_speed_y - new_speed_y * drag_coef;
+                v_y[i] = new_speed_y - new_speed_y * drag_coefficient;
                 pos_y[i] = new_position_y;
             }
 
             // Wall collision detect
-            if (new_position_x < 0) {
+            if (pos_x[i] < 0) {
                 v_x[i] = -v_x[i];
                 pos_x[i] = 0;
-            } else if (new_position_x > WINDOW_WIDTH) {
+            } else if (pos_x[i] > WINDOW_WIDTH) {
                 v_x[i] = -v_x[i];
                 pos_x[i] = WINDOW_WIDTH;
             }
-            if (new_position_y < 0) {
+            if (pos_y[i] < 0) {
                 v_y[i] = -v_y[i];
                 pos_y[i] = 0;
-            } else if (new_position_y > WINDOW_HEIGHT) {
+            } else if (pos_y[i] > WINDOW_HEIGHT) {
                 v_y[i] = -v_y[i];
                 pos_y[i] = WINDOW_HEIGHT;
             }
 
             // Update graphic with new data
-            vertices[i].position = sf::Vector2f{new_position_x, new_position_y};
+            vertices[i].position = sf::Vector2f{pos_x[i], pos_y[i]};
             colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
             if (!texture_mapping) {
                 vertices[i].color = colors[i];
@@ -228,12 +228,12 @@ void Field::naive_simulate() {
         // Update positions and speed
         if (new_position_x != pos_x[i]) {
             auto new_speed_x = (new_position_x - pos_x[i]) / dt;
-            v_x[i] = new_speed_x - new_speed_x * drag_coef;
+            v_x[i] = new_speed_x - new_speed_x * drag_coefficient;
             pos_x[i] = new_position_x;
         }
         if (new_position_y != pos_y[i]) {
             auto new_speed_y = (new_position_y - pos_y[i]) / dt;
-            v_y[i] = new_speed_y - new_speed_y * drag_coef;
+            v_y[i] = new_speed_y - new_speed_y * drag_coefficient;
             pos_y[i] = new_position_y;
         }
 
@@ -278,19 +278,11 @@ void Field::run(sf::RenderWindow *window) {
 
     simd_simulate();
 
-    // Turn on this if your CPU does not support the operation
-    //naive_simulate();
-    if (texture_mapping) {
-        window->clear(sf::Color::White);
-    } else {
-        window->clear(sf::Color::Black);
-    }
-
     TimeIt rendering("Rendering");
     vertex_buffer.update(vertices);
     window->draw(vertex_buffer);
-    window->display();
     dt = clock.restart().asSeconds();
+    window->display();
     rendering.end();
 }
 
@@ -300,4 +292,20 @@ bool Field::isMousePressed() const {
 
 void Field::setMousePressed(bool mousePressed) {
     mouse_pressed = mousePressed;
+}
+
+fpt Field::getMinimalDistance() const {
+    return minimal_distance;
+}
+
+void Field::setMinimalDistance(fpt minimalDistance) {
+    minimal_distance = minimalDistance;
+}
+
+bool Field::isTextureMapping() const {
+    return texture_mapping;
+}
+
+void Field::setTextureMapping(bool textureMapping) {
+    texture_mapping = textureMapping;
 }

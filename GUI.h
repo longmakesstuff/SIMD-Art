@@ -6,6 +6,7 @@
 #include <vector>
 #include <omp.h>
 #include <cstring>
+#include <TGUI/TGUI.hpp>
 #include <array>
 #include "Utils.h"
 #include "TimeIt.h"
@@ -19,9 +20,11 @@ private:
     sf::Clock clock;
     Field field;
     void info_text();
-
+    tgui::GuiSFML * widgets;
+    tgui::Label::Ptr minimal_distance_label;
+    tgui::Slider::Ptr minimal_distance;
 public:
-    GUI(sf::RenderWindow *window, sf::Font *font);
+    GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets);
 
     void main_loop();
 };
