@@ -10,6 +10,17 @@
 #include "Utils.h"
 #include "TimeIt.h"
 
+constexpr auto simd_set = _mm256_set1_ps;
+constexpr auto simd_load = _mm256_load;
+using simd_fpt = __m256;
+constexpr auto simd_sub = _mm256_sub_ps;
+constexpr auto simd_add = _mm256_add_ps;
+constexpr auto simd_mul = _mm256_mul_ps;
+constexpr auto simd_div = _mm256_div_ps;
+constexpr auto simd_sqrt = _mm256_sqrt_ps;
+constexpr auto simd_max = _mm256_max_ps;
+
+
 class Field {
     sf::Event event{};
     sf::RenderWindow *window;
@@ -22,7 +33,7 @@ class Field {
 
     static constexpr uint32_t block_size = 8;
 
-    static constexpr uint32_t blocks = 100000;
+    static constexpr uint32_t blocks = 200000;
 
     static constexpr uint32_t n = block_size * blocks;
 
@@ -30,8 +41,6 @@ class Field {
     alignas(32) fpt *pos_y;
     alignas(32) fpt *v_x;
     alignas(32) fpt *v_y;
-    alignas(32) fpt *g_force_x;
-    alignas(32) fpt *g_force_y;
     alignas(32) fpt *masses;
     sf::Color *colors;
     sf::Color *texture;

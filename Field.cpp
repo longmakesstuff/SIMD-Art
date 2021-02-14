@@ -6,8 +6,6 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
     pos_y = new fpt[n + 1];
     v_x = new fpt[n + 1];
     v_y = new fpt[n + 1];
-    g_force_x = new fpt[n + 1];
-    g_force_y = new fpt[n + 1];
     masses = new fpt[n + 1];
     colors = new sf::Color[n];
     texture = new sf::Color[WINDOW_HEIGHT * WINDOW_WIDTH];
@@ -19,7 +17,7 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
         LOG_ERROR("Illegal count of particles! Must be a divider of 8. Exit now!")
         std::exit(1);
     }
-    if (!pos_x || !pos_y || !v_x || !v_y || !g_force_x || !g_force_y || !masses || !colors || !texture) {
+    if (!pos_x || !pos_y || !v_x || !v_y || !masses || !colors || !texture) {
         LOG_ERROR("Cannot allocate enough memory. Exit now!")
         std::exit(1);
     }
@@ -46,8 +44,6 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
         pos_y[i] = pos(rng);
         v_x[i] = 0.0;
         v_y[i] = 0.0;
-        g_force_x[i] = 0.0;
-        g_force_y[i] = 0.0;
         masses[i] = 10000;
         colors[i].g = 255;
         colors[i].b = 255;
@@ -63,59 +59,68 @@ void Field::intrinsic_simulate() {
 
     // Delta^2
     fpt dt_2 = dt * dt;
+    simd_fpt dt_ = simd_set(dt);
+    simd_fpt dt_2_ = simd_set(dt_2);
+    simd_fpt c_0_5_ = simd_set(0.5);
+
 
     // Maximal distance
-    __m256 max_distances_ = _mm256_set1_ps(50.0);
+    simd_fpt max_distances_ = simd_set(50.0);
 
     // Loading mass, position of mouses
-    __m256 mouse_pos_x_ = _mm256_set1_ps(pos_x[n]);
-    __m256 mouse_pos_y_ = _mm256_set1_ps(pos_y[n]);
-    __m256 mouse_mass_ = _mm256_set1_ps(masses[n]);
+    simd_fpt mouse_pos_x_ = simd_set(pos_x[n]);
+    simd_fpt mouse_pos_y_ = simd_set(pos_y[n]);
+    simd_fpt mouse_mass_ = simd_set(masses[n]);
 
 #pragma omp parallel for
     for (uint32_t k = 0; k < n; k += block_size) {
+        // Loading current G-Force vectors
+        simd_fpt g_force_x_ = simd_set(0.0);
+        simd_fpt g_force_y_ = simd_set(0.0);
+        simd_fpt new_position_x_ = simd_load(pos_x + k);
+        simd_fpt new_position_y_ = simd_load(pos_y + k);
+
         if (mouse_pressed) {
             // Loading current positions
-            __m256 pos_x_ = _mm256_load_ps(pos_x + k);
-            __m256 pos_y_ = _mm256_load_ps(pos_y + k);
+            simd_fpt pos_x_ = simd_load(pos_x + k);
+            simd_fpt pos_y_ = simd_load(pos_y + k);
 
             // Loading current speed vectors
-            __m256 v_x_ = _mm256_load(v_x + k);
-            __m256 v_y_ = _mm256_load(v_y + k);
-
-            // Loading current G-Force vectors
-            __m256 g_force_x_ = _mm256_load(g_force_x + k);
-            __m256 g_force_y_ = _mm256_load(g_force_y + k);
+            simd_fpt v_x_ = simd_load(v_x + k);
+            simd_fpt v_y_ = simd_load(v_y + k);
 
             // Loading masses
-            __m256 masses_ = _mm256_load(masses + k);
+            simd_fpt masses_ = simd_load(masses + k);
 
             // Calculate distance
-            __m256 diff_pos_x_ = _mm256_sub_ps(mouse_pos_x_, pos_x_);
-            __m256 diff_pos_y_ = _mm256_sub_ps(mouse_pos_y_, pos_y_);
+            simd_fpt diff_pos_x_ = simd_sub(mouse_pos_x_, pos_x_);
+            simd_fpt diff_pos_y_ = simd_sub(mouse_pos_y_, pos_y_);
 
-            __m256 diff_pos_x_2_ = _mm256_mul_ps(diff_pos_x_, diff_pos_x_);
-            __m256 diff_pos_y_2_ = _mm256_mul_ps(diff_pos_y_, diff_pos_y_);
+            simd_fpt diff_pos_x_2_ = simd_mul(diff_pos_x_, diff_pos_x_);
+            simd_fpt diff_pos_y_2_ = simd_mul(diff_pos_y_, diff_pos_y_);
 
-            __m256 distance_ = _mm256_sqrt_ps(_mm256_add_ps(diff_pos_x_2_, diff_pos_y_2_));
-            distance_ = _mm256_max_ps(distance_, max_distances_);
-            __m256 distance_3_ = _mm256_mul_ps(_mm256_mul_ps(distance_, distance_), distance_);
+            simd_fpt distance_ = simd_sqrt(_mm256_add_ps(diff_pos_x_2_, diff_pos_y_2_));
+            distance_ = simd_max(distance_, max_distances_);
+            simd_fpt distance_3_ = simd_mul(simd_mul(distance_, distance_), distance_);
 
             // Calculate g-force
-            g_force_x_ = _mm256_mul_ps(mouse_mass_, _mm256_div_ps(diff_pos_x_, distance_3_));
-            g_force_y_ = _mm256_mul_ps(mouse_mass_, _mm256_div_ps(diff_pos_y_, distance_3_));
+            g_force_x_ = simd_mul(mouse_mass_, simd_div(diff_pos_x_, distance_3_));
+            g_force_y_ = simd_mul(mouse_mass_, simd_div(diff_pos_y_, distance_3_));
 
-            g_force_x_ = _mm256_mul_ps(g_force_x_, masses_);
-            g_force_y_ = _mm256_mul_ps(g_force_y_, masses_);
+            g_force_x_ = simd_mul(g_force_x_, masses_);
+            g_force_y_ = simd_mul(g_force_y_, masses_);
 
-            // Copy memory back to array
-            std::memcpy(g_force_x + k, (fpt *) &g_force_x_, block_size * sizeof(fpt));
-            std::memcpy(g_force_y + k, (fpt *) &g_force_y_, block_size * sizeof(fpt));
+            // Calculating new positions
+            new_position_x_ = simd_add(simd_add(pos_x_, simd_mul(v_x_, dt_)), simd_div(simd_mul(c_0_5_, g_force_x_), simd_mul(masses_, dt_2_)));
+            new_position_y_ = simd_add(simd_add(pos_y_, simd_mul(v_y_, dt_)), simd_div(simd_mul(c_0_5_, g_force_y_), simd_mul(masses_, dt_2_)));
         }
 
+        fpt * new_position_x_s = (fpt *)&new_position_x_;
+        fpt * new_position_y_s = (fpt *)&new_position_y_;
+
         for (uint32_t i = k; i < k + block_size; i++) {
-            fpt new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x[i] / masses[i] * dt_2;
-            fpt new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y[i] / masses[i] * dt_2;
+            fpt new_position_x = new_position_x_s[i - k];
+            fpt new_position_y = new_position_y_s[i - k];
 
             if (new_position_x != pos_x[i]) {
                 auto new_speed_x = (new_position_x - pos_x[i]) / dt;
@@ -163,22 +168,23 @@ void Field::simulate() {
 
 #pragma omp parallel for
     for (uint32_t i = 0; i < n; i++) {
-        if (mouse_pressed) {
-            g_force_x[i] = 0;
-            g_force_y[i] = 0;
+        fpt g_force_x = 0;
+        fpt g_force_y = 0;
 
+        if (mouse_pressed) {
             fpt diff_x = pos_x[n] - pos_x[i];
             fpt diff_y = pos_y[n] - pos_y[i];
 
             fpt distance = std::sqrt(diff_x * diff_x + diff_y * diff_y);
             distance = MAX(50.0, distance);
 
-            g_force_x[i] = masses[n] * (diff_x / std::pow(distance, 3)) * masses[i];
-            g_force_y[i] = masses[n] * (diff_y / std::pow(distance, 3)) * masses[i];
+            g_force_x = masses[n] * (diff_x / std::pow(distance, 3)) * masses[i];
+            g_force_y = masses[n] * (diff_y / std::pow(distance, 3)) * masses[i];
+
         }
 
-        fpt new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x[i] / masses[i] * delta_t_2;
-        fpt new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y[i] / masses[i] * delta_t_2;
+        fpt new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x / masses[i] * delta_t_2;
+        fpt new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y / masses[i] * delta_t_2;
 
         if (new_position_x != pos_x[i]) {
             auto new_speed_x = (new_position_x - pos_x[i]) / dt;
@@ -244,8 +250,8 @@ void Field::run() {
             pos_y[n] = y;
         }
 
-        //intrinsic_simulate();
-        simulate();
+        intrinsic_simulate();
+        //simulate();
         window->clear(sf::Color::Black);
 
         TimeIt rendering("Rendering");
