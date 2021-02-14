@@ -7,7 +7,6 @@
 #include <immintrin.h>
 #include <cstring>
 #include "Utils.h"
-#include "Memory.h"
 #include "TimeIt.h"
 
 class Field {
@@ -18,8 +17,24 @@ class Field {
     FPS fps;
     bool mouse_pressed = false;
     constexpr static bool texture_mapping = false;
-
     sf::Clock clock;
+
+    static constexpr uint32_t block_size = 8;
+
+    static constexpr uint32_t blocks = 100000;
+
+    static constexpr uint32_t n = block_size * blocks;
+
+    alignas(32) fpt *pos_x;
+    alignas(32) fpt *pos_y;
+    alignas(32) fpt *v_x;
+    alignas(32) fpt *v_y;
+    alignas(32) fpt *g_force_x;
+    alignas(32) fpt *g_force_y;
+    alignas(32) fpt *masses;
+    sf::Color *colors;
+    sf::Color *texture;
+    sf::VertexArray pixels{sf::Points, n};
 
     void simulate();
 

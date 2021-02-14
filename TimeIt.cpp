@@ -17,7 +17,7 @@ TimeIt::TimeIt(const std::string &text) {
     if (!TimeIt::closed_last_line)
         std::cout << std::endl;
     TimeIt::indent();
-    std::cout << padTo(text, 150 - TimeIt::recursion_level * 2) << "  ";
+    std::cout << padTo(text, 75 - TimeIt::recursion_level * 2) << "  ";
 
     TimeIt::recursion_level++;
     TimeIt::closed_last_line = false;
@@ -33,7 +33,7 @@ void TimeIt::end() {
     if (TimeIt::closed_last_line) {
         TimeIt::indent();
 
-        std::cout << padTo("- ", 150 - TimeIt::recursion_level * 2) << "  ";
+        std::cout << padTo("- ", 75 - TimeIt::recursion_level * 2) << "  ";
     }
     std::cout << "Done after "
               << TimeIt::format_number(std::chrono::duration_cast<std::chrono::microseconds>(diff).count())

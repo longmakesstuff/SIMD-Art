@@ -15,7 +15,7 @@ else ()
     message(ERROR_FATAL "Can not find SFML")
 endif ()
 
-add_executable(particle_system main.cpp Field.h Field.cpp Utils.cpp Utils.h Memory.h Memory.cpp TimeIt.cpp TimeIt.h)
+add_executable(particle_system main.cpp Field.h Field.cpp Utils.cpp Utils.h TimeIt.cpp TimeIt.h)
 add_executable(test test.cpp)
 
 target_link_libraries(particle_system
