@@ -23,6 +23,7 @@ private:
     tgui::GuiSFML * widgets;
     tgui::Label::Ptr minimal_distance_label;
     tgui::Slider::Ptr minimal_distance;
+    tgui::CheckBox::Ptr texture_mapping;
 public:
     GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets);
 
