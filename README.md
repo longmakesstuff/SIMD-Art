@@ -11,9 +11,9 @@ to cope with university's exam stress and gives me a small mind space just for m
 
 Currently I have been working a lots with Neon Register on ARM architecture and found myself falling in love with SIMD (Single Input Multiply Data)
 and generally parallel programming. Normally, almost every modern CPU supports SIMD and a smart compiler will try its best 
-to vectorize our code. But even the best compiler is not smart enough to understand the programming logic, which is fundamental
-for enhancing code performance. Therefore when we find ourself need a bit more speed push but can not afford to run software 
-on graphics card, explicitly programming in SIMD would be a way out. 
+to vectorize our code. But even the best compiler is not smart enough to understand the business logic, which is fundamental
+for enhancing code performance. Therefore, when we find ourself need a bit more speed push, but can not afford to run software 
+on a graphics card, explicitly programming in SIMD could be a way out. 
 
 ### The how
 
