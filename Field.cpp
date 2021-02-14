@@ -25,20 +25,7 @@ Field::Field() {
         std::exit(1);
     }
 
-    // Loading texture
-    sf::Image image;
-    if (!image.loadFromFile(texture_file)) {
-        LOG_ERROR("Can not load texture image. Exit now")
-        std::exit(1);
-    }
-
-    for (uint32_t y = 0; y < WINDOW_HEIGHT; y++) {
-        for (uint32_t x = 0; x < WINDOW_WIDTH; x++) {
-            texture[y * WINDOW_HEIGHT + x].r = image.getPixel(x, y).r;
-            texture[y * WINDOW_HEIGHT + x].g = image.getPixel(x, y).g;
-            texture[y * WINDOW_HEIGHT + x].b = image.getPixel(x, y).b;
-        }
-    }
+    load_texture();
 
     // Initialise particles' position
     std::mt19937 rng;
@@ -68,6 +55,28 @@ Field::~Field() {
     delete colors;
     delete texture;
     delete vertices;
+}
+
+void Field::load_texture() {
+    // Loading texture
+    sf::Image image;
+    if (!image.loadFromFile(texture_file)) {
+        LOG_ERROR("Can not load texture image. Exit now.")
+        std::exit(1);
+    }
+
+    if(image.getSize().x != WINDOW_WIDTH || image.getSize().y != WINDOW_HEIGHT) {
+        LOG_ERROR("Image can not be used since the file's size is not 1000x1000. Exit now.")
+        std::exit(1);
+    }
+
+    for (uint32_t y = 0; y < WINDOW_HEIGHT; y++) {
+        for (uint32_t x = 0; x < WINDOW_WIDTH; x++) {
+            texture[y * WINDOW_HEIGHT + x].r = image.getPixel(x, y).r;
+            texture[y * WINDOW_HEIGHT + x].g = image.getPixel(x, y).g;
+            texture[y * WINDOW_HEIGHT + x].b = image.getPixel(x, y).b;
+        }
+    }
 }
 
 void Field::simd_simulate() {
@@ -332,4 +341,13 @@ uint32_t Field::getParticleMass() const {
 
 void Field::setParticleMass(uint32_t particleMass) {
     particle_mass = particleMass;
+}
+
+const std::string &Field::getTextureFile() const {
+    return texture_file;
+}
+
+void Field::setTextureFile(const std::string &textureFile) {
+    texture_file = textureFile;
+    load_texture();
 }

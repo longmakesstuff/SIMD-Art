@@ -30,6 +30,8 @@ private:
     tgui::Slider::Ptr mouse_mass;
     tgui::Label::Ptr particles_mass_label;
     tgui::Slider::Ptr particles_mass;
+    tgui::Label::Ptr textures_label;
+    tgui::ListBox::Ptr textures;
 public:
     GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets);
 

@@ -71,6 +71,8 @@ class Field {
      */
     void simd_simulate();
 
+    void load_texture();
+
 public:
     explicit Field();
 
@@ -101,4 +103,8 @@ public:
     [[nodiscard]] uint32_t getParticleMass() const;
 
     void setParticleMass(uint32_t particleMass);
+
+    const std::string &getTextureFile() const;
+
+    void setTextureFile(const std::string &textureFile);
 };

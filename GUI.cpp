@@ -87,6 +87,21 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
         field.setMouseMass(particles_mass->getValue());
     });
 
+    // List box
+    textures_label = tgui::Label::create("Texture list");
+    textures_label->setPosition(WIDGET_POS_X, get_next_label_position());
+    textures_label->setWidth(WIDGET_WIDTH);
+
+    textures = tgui::ListBox::create();
+    textures->setPosition(WIDGET_POS_X, get_next_widget_position());
+    textures->setWidth(WIDGET_WIDTH);
+    textures->addItem("armstrong.jpg");
+    textures->addItem(field.getTextureFile());
+    textures->setSelectedItem(field.getTextureFile());
+    textures->onItemSelect([&](){
+        field.setTextureFile(textures->getSelectedItem().toStdString());
+    });
+
     widgets->add(texture_mapping);
     widgets->add(minimal_distance_label);
     widgets->add(minimal_distance);
@@ -96,6 +111,8 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
     widgets->add(mouse_mass);
     widgets->add(particles_mass_label);
     widgets->add(particles_mass);
+    widgets->add(textures_label);
+    widgets->add(textures);
 }
 
 
