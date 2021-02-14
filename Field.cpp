@@ -28,7 +28,7 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
     // Loading texture
     sf::Image image;
     if (!image.loadFromFile(texture_file)) {
-        LOG_ERROR("Can not load heart.jpg. Exit now")
+        LOG_ERROR("Can not load texture image. Exit now")
         std::exit(1);
     }
 
@@ -42,7 +42,7 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
 
     // Initialise particles' position
     std::mt19937 rng;
-    std::uniform_real_distribution<fpt> pos(900.0, 1000.0);
+    std::uniform_real_distribution<fpt> pos(450.0, 550.0);
     // Initialize random position
     for (uint32_t i = 0; i < n; i++) {
         pos_x[i] = pos(rng);
@@ -50,8 +50,8 @@ Field::Field(sf::RenderWindow *window, sf::Font *font) : window(window), font(fo
         v_x[i] = 0.0;
         v_y[i] = 0.0;
         masses[i] = particle_mass;
-        colors[i].g = 255;
-        colors[i].b = 255;
+        colors[i].g = 125;
+        colors[i].b = 125;
     }
 
     // Position for mouse
@@ -130,8 +130,8 @@ void Field::simd_simulate() {
             g_force_y_ = simd_mul(g_force_y_, masses_);
 
             // Copy G-Force back to buffer
-            std::memcpy(g_force_x, (fpt * )&g_force_x_, block_size * sizeof(fpt));
-            std::memcpy(g_force_y, (fpt * )&g_force_y_, block_size * sizeof(fpt));
+            std::memcpy(g_force_x, (fpt *) &g_force_x_, block_size * sizeof(fpt));
+            std::memcpy(g_force_y, (fpt *) &g_force_y_, block_size * sizeof(fpt));
         }
 
         // Calculating new positions
@@ -183,14 +183,13 @@ void Field::simd_simulate() {
             }
 
             // Update graphic with new data
-            colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
-
             vertices[i].position = sf::Vector2f{new_position_x, new_position_y};
+            colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
             if (!texture_mapping) {
                 vertices[i].color = colors[i];
             } else {
                 vertices[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
-                                             WINDOW_HEIGHT * WINDOW_HEIGHT)];
+                                                WINDOW_HEIGHT * WINDOW_HEIGHT)];
             }
 
         }
@@ -256,14 +255,13 @@ void Field::naive_simulate() {
 
 
         // Update graphic
-        colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
-
+        colors[i].r = clamp(norm(sf::Vector2<fpt>{v_x[i], v_y[i]}), 0, 255);
         vertices[i].position = sf::Vector2f{new_position_x, new_position_y};
         if (!texture_mapping) {
             vertices[i].color = colors[i];
         } else {
             vertices[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
-                                         WINDOW_HEIGHT * WINDOW_HEIGHT)];
+                                            WINDOW_HEIGHT * WINDOW_HEIGHT)];
         }
 
     }
@@ -296,9 +294,14 @@ void Field::run() {
         }
 
         simd_simulate();
-        //naive_simulate();
-        window->clear(sf::Color::White);
 
+        // Turn on this if your CPU does not support the operation
+        //naive_simulate();
+        if (texture_mapping) {
+            window->clear(sf::Color::White);
+        } else {
+            window->clear(sf::Color::Black);
+        }
         TimeIt rendering("Rendering");
         vertex_buffer.update(vertices);
         window->draw(vertex_buffer);

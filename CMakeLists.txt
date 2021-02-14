@@ -4,7 +4,7 @@ project(gravitation)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -march=haswell -O3 -g -mavx")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3 -g -mavx -march=haswell")
 
 find_package(SFML 2.5 REQUIRED audio graphics window system)
 find_package(OpenMP)

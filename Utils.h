@@ -92,3 +92,14 @@ inline sf::Vector2<fpt> operator*(const sf::Vector2<fpt> &lhs, fpt scalar) {
     ret.y *= scalar;
     return ret;
 }
+
+inline fpt clamp(fpt value, fpt min, fpt max) {
+    float result;
+    if (value > max)
+        result = max;
+    else if (value < min)
+        result = min;
+    else
+        result = value;
+    return result;
+}

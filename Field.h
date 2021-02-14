@@ -26,22 +26,22 @@ class Field {
     bool mouse_pressed = false;
 
     // Do we want to use texture mapping?
-    constexpr static bool texture_mapping = true;
+    constexpr static bool texture_mapping = false;
 
     // SIMD instruction size
     static constexpr uint32_t block_size = 8;
 
     // How many blocks do we want to simulate
-    static constexpr uint32_t blocks = 10000;
+    static constexpr uint32_t blocks = 150000;
 
     // How many particles do we want to simulate
     static constexpr uint32_t n = block_size * blocks;
 
     // Mass of mouse point, the heavier, the faster the particles
-    static constexpr uint32_t mouse_mass = 25000000;
+    static constexpr uint32_t mouse_mass = 45000000;
 
     // Mass of a particle, the heavier, the slower the particles
-    static constexpr uint32_t particle_mass = 10000;
+    static constexpr uint32_t particle_mass = 5000;
 
     // Minimal distance for better effect, the smaller, the more unstable will the numerical results get
     static constexpr fpt minimal_distance = 75;
@@ -50,7 +50,7 @@ class Field {
     static constexpr fpt drag_coef = 0.025;
 
     // Link to the texture
-    const std::string texture_file = "grumpy-cat.jpg";
+    const std::string texture_file = "hendrix.jpg";
 
     // Buffer for SIMD parallelization
     alignas(32) fpt *pos_x;
