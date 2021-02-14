@@ -6,6 +6,7 @@
 #include <omp.h>
 #include "Utils.h"
 #include "Memory.h"
+#include "TimeIt.h"
 
 class Field {
     sf::Event event{};

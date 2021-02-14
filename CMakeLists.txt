@@ -13,7 +13,7 @@ else ()
     message(ERROR_FATAL "Can not find SFML")
 endif ()
 
-add_executable(gravitation main.cpp Field.h Field.cpp Utils.cpp Utils.h Memory.h Memory.cpp)
+add_executable(gravitation main.cpp Field.h Field.cpp Utils.cpp Utils.h Memory.h Memory.cpp TimeIt.cpp TimeIt.h)
 
 target_link_libraries(gravitation
         ${SFML_LIBRARIES}

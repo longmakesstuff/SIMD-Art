@@ -29,7 +29,7 @@
 
 #define NOW std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch()).count()
 
-typedef double fpt;
+typedef float fpt;
 
 class FPS {
 public:

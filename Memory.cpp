@@ -9,10 +9,11 @@ fpt * g_force_y = new fpt[n + 1];
 fpt * m = new fpt[n + 1];
 sf::Color * colors = new sf::Color[n];
 sf::Color * texture = new sf::Color[WINDOW_HEIGHT * WINDOW_WIDTH];
+extern sf::VertexArray pixels(sf::Points, n);
 
 void initialize_memory() {
     std::mt19937 rng;
-    std::uniform_real_distribution<fpt> pos(400.0, 600.0);
+    std::uniform_real_distribution<fpt> pos(200.0, 800.0);
 
     for (uint32_t i = 0; i < n; i++) {
         pos_x[i] = pos(rng);
@@ -26,5 +27,5 @@ void initialize_memory() {
         colors[i].b = 255;
     }
 
-    m[n] = 100000000000000;
+    m[n] = 10000000000000;
 }

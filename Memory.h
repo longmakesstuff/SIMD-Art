@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "Utils.h"
 
-constexpr uint32_t n = 15000;
+constexpr uint32_t n = 100000;
 
 extern fpt * pos_x;
 extern fpt * pos_y;
@@ -16,7 +16,7 @@ extern fpt * g_force_y;
 extern fpt * m;
 extern sf::Color * colors;
 extern sf::Color * texture;
-
+extern sf::VertexArray pixels;
 void initialize_memory();
 
 #endif //GRAVITATION_MEMORY_H
