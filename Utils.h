@@ -6,7 +6,8 @@
 #include <random>
 #include <chrono>
 #include <iostream>
-#include  <iterator>
+#include <iterator>
+#include <immintrin.h>
 
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 1000
@@ -41,8 +42,23 @@ public:
     void update();
 };
 
+inline fpt Q_rsqrt(fpt n) {
+    n = 1.0f / n;
+    long i;
+    float x, y;
+
+    x = n * 0.5f;
+    y = n;
+    i = *(long *) &y;
+    i = 0x5f3759df - (i >> 1);
+    y = *(float *) &i;
+    y = y * (1.5f - (x * y * y));
+
+    return y;
+}
+
 template<typename Iter, typename RandomGenerator>
-Iter select_randomly(Iter start, Iter end, RandomGenerator& g) {
+Iter select_randomly(Iter start, Iter end, RandomGenerator &g) {
     std::uniform_int_distribution<> dis(0, std::distance(start, end) - 1);
     std::advance(start, dis(g));
     return start;
@@ -55,11 +71,11 @@ Iter select_randomly(Iter start, Iter end) {
     return select_randomly(start, end, gen);
 }
 
-inline fpt norm(const sf::Vector2<fpt> &vec){
+inline fpt norm(const sf::Vector2<fpt> &vec) {
     return std::sqrt(std::pow(vec.x, 2.0f) + std::pow(vec.y, 2.0f));
 }
 
-inline std::ostream &operator<<(std::ostream &os, const sf::Vector2<fpt> &vector){
+inline std::ostream &operator<<(std::ostream &os, const sf::Vector2<fpt> &vector) {
     os << "[x = " << vector.x << ", y = " << vector.y << "]";
     return os;
 }
@@ -78,16 +94,20 @@ inline sf::Vector2<fpt> operator-(const sf::Vector2<fpt> &lhs, fpt scalar) {
     return ret;
 }
 
-inline sf::Vector2<fpt> operator/(const sf::Vector2<fpt> &lhs, fpt scalar){
+inline sf::Vector2<fpt> operator/(const sf::Vector2<fpt> &lhs, fpt scalar) {
     sf::Vector2<fpt> ret(lhs);
     ret.x /= scalar;
     ret.y /= scalar;
     return ret;
 }
 
-inline sf::Vector2<fpt> operator*(const sf::Vector2<fpt> &lhs, fpt scalar){
+inline sf::Vector2<fpt> operator*(const sf::Vector2<fpt> &lhs, fpt scalar) {
     sf::Vector2<fpt> ret(lhs);
     ret.x *= scalar;
     ret.y *= scalar;
     return ret;
+}
+
+inline __m256 _mm256_load(const float * ptr) {
+    return _mm256_set_ps(ptr[7], ptr[6], ptr[5],ptr[4],ptr[3],ptr[2],ptr[1],ptr[0]);
 }

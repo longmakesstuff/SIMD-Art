@@ -1,18 +1,22 @@
 #include "Memory.h"
 
-fpt *pos_x = new fpt[n + 1];
-fpt *pos_y = new fpt[n + 1];
-fpt *v_x = new fpt[n + 1];
-fpt *v_y = new fpt[n + 1];
-fpt *g_force_x = new fpt[n + 1];
-fpt *g_force_y = new fpt[n + 1];
-fpt *m = new fpt[n + 1];
+alignas(32) fpt *pos_x = new fpt[n + 1];
+alignas(32) fpt *pos_y = new fpt[n + 1];
+alignas(32) fpt *v_x = new fpt[n + 1];
+alignas(32) fpt *v_y = new fpt[n + 1];
+alignas(32) fpt *g_force_x = new fpt[n + 1];
+alignas(32) fpt *g_force_y = new fpt[n + 1];
+alignas(32) fpt *masses = new fpt[n + 1];
 sf::Color *colors = new sf::Color[n];
 sf::Color *texture = new sf::Color[WINDOW_HEIGHT * WINDOW_WIDTH];
 extern sf::VertexArray pixels(sf::Points, n);
 
 void initialize_memory() {
-    if (!pos_x || !pos_y || !v_x || !v_y || !g_force_x || !g_force_y || !m || !colors || !texture) {
+    if(n % block_size != 0) {
+        LOG_ERROR("Illegal count of particles! Must be a divider of 8. Exit now!")
+        std::exit(1);
+    }
+    if (!pos_x || !pos_y || !v_x || !v_y || !g_force_x || !g_force_y || !masses || !colors || !texture) {
         LOG_ERROR("Cannot allocate enough memory. Exit now!")
         std::exit(1);
     }
@@ -42,12 +46,12 @@ void initialize_memory() {
         v_y[i] = 0.0;
         g_force_x[i] = 0.0;
         g_force_y[i] = 0.0;
-        m[i] = 10000;
+        masses[i] = 10000;
         colors[i].g = 255;
         colors[i].b = 255;
     }
 
     // Position for mouse
     // We want mouse to dominates
-    m[n] = 10000000;
+    masses[n] = 10000000;
 }

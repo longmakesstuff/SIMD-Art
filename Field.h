@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 #include <omp.h>
+#include <immintrin.h>
+#include <cstring>
 #include "Utils.h"
 #include "Memory.h"
 #include "TimeIt.h"
@@ -20,6 +22,8 @@ class Field {
     sf::Clock clock;
 
     void simulate();
+
+    void intrinsic_simulate();
 
     void info_text();
 

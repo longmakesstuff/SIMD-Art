@@ -4,9 +4,7 @@ project(gravitation)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -march=haswell -O3 -g -mavx")
 
 find_package(SFML 2.5 REQUIRED audio graphics window system)
 find_package(OpenMP)
@@ -18,8 +16,18 @@ else ()
 endif ()
 
 add_executable(particle_system main.cpp Field.h Field.cpp Utils.cpp Utils.h Memory.h Memory.cpp TimeIt.cpp TimeIt.h)
+add_executable(test test.cpp)
 
 target_link_libraries(particle_system
+        ${SFML_LIBRARIES}
+        ${SFML_DEPENDENCIES}
+        PUBLIC OpenMP::OpenMP_CXX
+        sfml-graphics
+        sfml-window
+        sfml-system
+        m)
+
+target_link_libraries(test
         ${SFML_LIBRARIES}
         ${SFML_DEPENDENCIES}
         PUBLIC OpenMP::OpenMP_CXX
