@@ -32,7 +32,7 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
     minimal_distance_label->setPosition(WIDGET_POS_X, get_next_label_position());
     minimal_distance_label->setWidth(WIDGET_WIDTH);
 
-    minimal_distance = tgui::Slider::create(5, 100);
+    minimal_distance = tgui::Slider::create(5, 150);
     minimal_distance->setStep(2);
     minimal_distance->setPosition(WIDGET_POS_X, get_next_widget_position());
     minimal_distance->setHeight(10);
@@ -107,7 +107,6 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
             textures->addItem(file_path);
         }
     }
-    textures->addItem(field.getTextureFile());
 
     widgets->add(texture_mapping);
     widgets->add(minimal_distance_label);

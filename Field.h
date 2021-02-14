@@ -28,7 +28,7 @@ class Field {
     static constexpr uint32_t block_size = 8;
 
     // How many blocks do we want to simulate
-    static constexpr uint32_t blocks = 150000;
+    static constexpr uint32_t blocks = 100000;
 
     // How many particles do we want to simulate
     static constexpr uint32_t n = block_size * blocks;
@@ -40,13 +40,13 @@ class Field {
     uint32_t particle_mass = 5000;
 
     // Minimal distance for better effect, the smaller, the more unstable will the numerical results get
-    fpt minimal_distance = 75;
+    fpt minimal_distance = 80;
 
     // Slowing particles over time
     fpt drag_coefficient = 0.025;
 
     // Link to the texture
-    std::string texture_file = "hendrix.jpg";
+    std::string texture_file = "grumpy-cat.jpg";
 
     // Buffer for SIMD parallelization
     alignas(32) fpt *pos_x;

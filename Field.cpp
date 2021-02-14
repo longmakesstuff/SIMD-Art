@@ -29,7 +29,7 @@ Field::Field() {
 
     // Initialise particles' position
     std::mt19937 rng;
-    std::uniform_real_distribution<fpt> pos(450.0, 550.0);
+    std::uniform_real_distribution<fpt> pos(400.0, 600.0);
     // Initialize random position
     for (uint32_t i = 0; i < n; i++) {
         pos_x[i] = pos(rng);
@@ -82,7 +82,7 @@ void Field::load_texture() {
 void Field::simd_simulate() {
     TimeIt simulation("SIMD Simulation");
 
-    // Delta^2
+    // Some constants
     fpt dt_2 = dt * dt;
     simd_fpt dt_ = simd_set(dt);
     simd_fpt dt_2_ = simd_set(dt_2);
