@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "Utils.h"
 
-constexpr uint32_t n = 100000;
+constexpr uint32_t n = 500000;
 
 extern fpt * pos_x;
 extern fpt * pos_y;

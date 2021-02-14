@@ -21,13 +21,6 @@ public:
     explicit TimeIt(const std::string &text);
 
     /**
-     * Constructor
-     *
-     * @param buffer name of the benchmarking case
-     */
-    explicit TimeIt(const std::stringstream &buffer);
-
-    /**
      * End the latest benchmarking case
      */
     void end();

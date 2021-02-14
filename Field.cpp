@@ -28,14 +28,14 @@ void Field::simulate() {
             fpt diff_x = pos_x[n] - pos_x[i];
             fpt diff_y = pos_y[n] - pos_y[i];
 
-            fpt distance = MAX(50.0, sqrt(diff_x * diff_x + diff_y * diff_y));
+            fpt distance = MAX(50.0, sqrtf(diff_x * diff_x + diff_y * diff_y));
 
             g_force_x[i] = m[n] * (diff_x / std::pow(distance, 3)) * m[i] * UGC;
             g_force_y[i] = m[n] * (diff_y / std::pow(distance, 3)) * m[i] * UGC;
         }
 
-        auto new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x[i] / m[i] * pow(dt, 2);
-        auto new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y[i] / m[i] * pow(dt, 2);
+        fpt new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x[i] / m[i] * pow(dt, 2);
+        fpt new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y[i] / m[i] * pow(dt, 2);
         if (new_position_x != pos_x[i]) {
             auto new_speed_x = (new_position_x - pos_x[i]) / dt;
             v_x[i] = new_speed_x - new_speed_x * 0.025;
@@ -54,6 +54,14 @@ void Field::simulate() {
         }
 
         colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
+
+        pixels[i].position = sf::Vector2f{new_position_x, new_position_y};
+        if (!texture_mapping) {
+            pixels[i].color = colors[i];
+        } else {
+            pixels[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
+                                          WINDOW_HEIGHT * WINDOW_HEIGHT)];
+        }
     }
     simulation.end();
 }
@@ -98,25 +106,10 @@ void Field::run() {
         window->clear(sf::Color::Black);
 
         TimeIt rendering("Rendering");
-        if (!texture_mapping) {
-#pragma omp parallel for
-            for (uint32_t i = 0; i < n; i++) {
-                pixels[i].color = colors[i];
-                pixels[i].position = sf::Vector2f{(float) pos_x[i], (float) pos_y[i]};
-            }
-        } else {
-#pragma omp parallel for
-            for (uint32_t i = 0; i < n; i++) {
-                pixels[i].color = texture[MIN((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i], WINDOW_HEIGHT * WINDOW_HEIGHT)];
-                pixels[i].position = sf::Vector2f{(float) pos_x[i], (float) pos_y[i]};
-            }
-        }
-        rendering.end();
         window->draw(pixels);
-
         info_text();
-
         window->display();
         dt = clock.restart().asSeconds();
+        rendering.end();
     }
 }

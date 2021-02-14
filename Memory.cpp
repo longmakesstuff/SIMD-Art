@@ -13,7 +13,7 @@ extern sf::VertexArray pixels(sf::Points, n);
 
 void initialize_memory() {
     std::mt19937 rng;
-    std::uniform_real_distribution<fpt> pos(200.0, 800.0);
+    std::uniform_real_distribution<fpt> pos(100.0, 900.0);
 
     for (uint32_t i = 0; i < n; i++) {
         pos_x[i] = pos(rng);
