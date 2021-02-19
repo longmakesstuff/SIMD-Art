@@ -77,7 +77,7 @@ void Field::load_texture() {
 }
 
 void Field::simd_simulate() {
-    //TimeIt simulation("SIMD Simulation");
+    TimeIt simulation("SIMD Simulation");
 
     // Some constants
     fpt dt_2 = dt * dt;
@@ -138,7 +138,7 @@ void Field::simd_simulate() {
         }
 
         simd_fpt new_position_x_s_ = pos_x_ + v_x_ * dt_ + c_0_5_ * g_force_x_ / masses_ * dt_2_;
-        simd_fpt new_position_y_s_ = pos_y_ + v_y_ * dt + c_0_5_ * g_force_y_ / masses_ * dt_2_;
+        simd_fpt new_position_y_s_ = pos_y_ + v_y_ * dt_ + c_0_5_ * g_force_y_ / masses_ * dt_2_;
 
         fpt * new_position_x_s = (fpt *)&new_position_x_s_;
         fpt * new_position_y_s = (fpt *)&new_position_y_s_;
@@ -188,7 +188,7 @@ void Field::simd_simulate() {
 
         }
     }
-    //simulation.end();
+    simulation.end();
 }
 
 void Field::naive_simulate() {
