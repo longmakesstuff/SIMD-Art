@@ -1,4 +1,4 @@
-#include "Utils.h"
+#include "simdart/FPS.h"
 
 void FPS::update() {
     if (clock.getElapsedTime().asSeconds() >= 1.f) {

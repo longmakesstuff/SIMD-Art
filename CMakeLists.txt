@@ -1,35 +1,29 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(gravitation)
-
+# Project's specific flags
+project(SIMDART)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3 -g -march=native -fopenmp -std=c++20 -mavx -march=native")
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3 -g -mavx -march=native")
+# Adding CMake modules
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/cmake_modules/")
 
+# Finding dependencies
 find_package(SFML 2.5 REQUIRED audio graphics window system)
-find_package(OpenMP REQUIRED)
+find_package(spdlog 1.8 REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(fmt 6.1 REQUIRED)
 find_package(TGUI 0.9.0 REQUIRED)
+set(LIBRARY sfml-graphics sfml-window sfml-system Eigen3::Eigen spdlog fmt tgui ${PROJECT_NAME})
 
-if (SFML_FOUND)
-    include_directories(${SFML_INCLUDE_DIR})
-else ()
-    message(ERROR_FATAL "Can not find SFML")
-endif ()
+# Add directories
+add_subdirectory(src)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+add_subdirectory(bin)
+add_subdirectory(tests)
 
-add_executable(particle_system main.cpp Field.h Field.cpp Utils.cpp Utils.h TimeIt.cpp TimeIt.h Simd.h GUI.cpp GUI.h)
-
-target_link_libraries(particle_system
-        ${SFML_LIBRARIES}
-        ${SFML_DEPENDENCIES}
-        ${TGUI_LIBRARY}
-        tgui
-        OpenMP::OpenMP_CXX
-        sfml-graphics
-        sfml-window
-        sfml-system
-        m)
-
+# Copy running time files
 file(GLOB resource_files "${CMAKE_CURRENT_SOURCE_DIR}/data/*")
 foreach (item ${resource_files})
-    FILE(COPY ${item} DESTINATION "${CMAKE_BINARY_DIR}")
+    FILE(COPY ${item} DESTINATION "${CMAKE_BINARY_DIR}/bin")
 endforeach ()

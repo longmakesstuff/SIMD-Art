@@ -1,4 +1,4 @@
-#include "GUI.h"
+#include "simdart/GUI.h"
 
 constexpr int32_t WIDGET_POS_X = WINDOW_WIDTH + 5;
 constexpr int32_t WIDGET_WIDTH = 350;

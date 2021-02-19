@@ -6,9 +6,9 @@
 #include <omp.h>
 #include <cstring>
 #include <array>
-#include "Utils.h"
-#include "TimeIt.h"
-#include "Simd.h"
+#include "simdart/Utils.h"
+#include "simdart/TimeIt.h"
+#include "simdart/Simd.h"
 
 
 class Field {

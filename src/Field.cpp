@@ -1,10 +1,10 @@
-#include "Field.h"
+#include <random>
+#include "simdart/Field.h"
 
 
 Field::Field() {
     // Sanity check
     if (n % block_size != 0) {
-        LOG_ERROR("Illegal count of particles! Must be a divider of 8. Exit now!")
         std::exit(1);
     }
 
@@ -21,7 +21,6 @@ Field::Field() {
 
     // Check memory's status
     if (!pos_x || !pos_y || !v_x || !v_y || !masses || !colors || !texture) {
-        LOG_ERROR("Cannot allocate enough memory. Exit now!")
         std::exit(1);
     }
 
@@ -61,12 +60,10 @@ void Field::load_texture() {
     // Loading texture
     sf::Image image;
     if (!image.loadFromFile(texture_file)) {
-        LOG_ERROR("Can not load texture image. Exit now.")
         std::exit(1);
     }
 
     if(image.getSize().x != WINDOW_WIDTH || image.getSize().y != WINDOW_HEIGHT) {
-        LOG_ERROR("Image can not be used since the file's size is not 1000x1000. Exit now.")
         std::exit(1);
     }
 

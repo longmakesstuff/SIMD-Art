@@ -1,6 +1,5 @@
 #ifndef GRAVITATION_GUI_H
 #define GRAVITATION_GUI_H
-#include "Field.h"
 #include <SFML/Graphics.hpp>
 #include <sstream>
 #include <vector>
@@ -9,9 +8,11 @@
 #include <TGUI/TGUI.hpp>
 #include <array>
 #include <filesystem>
-#include "Utils.h"
-#include "TimeIt.h"
-#include "Simd.h"
+#include "simdart/Utils.h"
+#include "simdart/TimeIt.h"
+#include "simdart/Simd.h"
+#include "simdart/FPS.h"
+#include "simdart/Field.h"
 
 class GUI {
 private:
