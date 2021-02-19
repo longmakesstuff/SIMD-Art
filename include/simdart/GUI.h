@@ -8,6 +8,7 @@
 #include <TGUI/TGUI.hpp>
 #include <array>
 #include <filesystem>
+#include <SFML/OpenGL.hpp>
 #include "simdart/Utils.h"
 #include "simdart/TimeIt.h"
 #include "simdart/SIMD.h"

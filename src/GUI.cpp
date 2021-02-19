@@ -7,12 +7,12 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
                                                                              widgets(widgets) {
     int32_t current_widget_pos = 0;
 
-    auto get_next_label_position = [&current_widget_pos]() mutable ->int32_t {
+    auto get_next_label_position = [&current_widget_pos]() mutable -> int32_t {
         current_widget_pos += 50;
         return current_widget_pos;
     };
 
-    auto get_next_widget_position = [&current_widget_pos]() mutable ->int32_t {
+    auto get_next_widget_position = [&current_widget_pos]() mutable -> int32_t {
         current_widget_pos += 20;
         return current_widget_pos;
     };
@@ -21,7 +21,7 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
     texture_mapping = tgui::CheckBox::create("Texture mapping");
     texture_mapping->setPosition(WIDGET_POS_X, get_next_widget_position());
     texture_mapping->setChecked(field.isTextureMapping());
-    texture_mapping->onChange([&](){
+    texture_mapping->onChange([&]() {
         field.setTextureMapping(texture_mapping->isChecked());
     });
 
@@ -94,14 +94,14 @@ GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : win
     textures->setPosition(WIDGET_POS_X, get_next_widget_position());
     textures->setWidth(WIDGET_WIDTH);
     textures->setSelectedItem(field.getTextureFile());
-    textures->onItemSelect([&](){
+    textures->onItemSelect([&]() {
         field.setTextureFile(textures->getSelectedItem().toStdString());
     });
 
     // Search for every texture
-    for (const auto & entry : std::filesystem::directory_iterator(".")) {
+    for (const auto &entry : std::filesystem::directory_iterator(".")) {
         std::string file_path = entry.path().string();
-        if(file_path.ends_with(".png") || file_path.ends_with(".jpg") || file_path.ends_with(".jpeg")){
+        if (file_path.ends_with(".png") || file_path.ends_with(".jpg") || file_path.ends_with(".jpeg")) {
             textures->addItem(file_path);
         }
     }
@@ -153,10 +153,16 @@ void GUI::main_loop() {
                     field.setMousePressed(false);
                 }
             }
+
+            if (event.type == sf::Event::Resized) {
+                // adjust the viewport when the window is resized
+                glViewport(0, 0, event.size.width, event.size.height);
+            }
         }
 
         // Turn on this if your CPU does not support the operation
         //naive_simulate();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (field.isTextureMapping()) {
             window->clear(sf::Color::White);
         } else {
