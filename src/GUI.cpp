@@ -5,8 +5,6 @@ constexpr int32_t WIDGET_WIDTH = 350;
 
 GUI::GUI(sf::RenderWindow *window, sf::Font *font, tgui::GuiSFML *widgets) : window(window), font(font),
                                                                              widgets(widgets) {
-
-
     int32_t current_widget_pos = 0;
 
     auto get_next_label_position = [&current_widget_pos]() mutable ->int32_t {
@@ -133,18 +131,23 @@ void GUI::info_text() {
 }
 
 void GUI::main_loop() {
-    sf::Event event;
+    sf::Event event{};
     while (window->isOpen()) {
         while (window->pollEvent(event)) {
             widgets->handleEvent(event);
+            // Exit application
             if (event.type == sf::Event::EventType::Closed) {
                 std::exit(0);
             }
+
+            // Mouse pressed, G-Force will be available, particles will be moved
             if (event.type == sf::Event::EventType::MouseButtonPressed) {
                 if (!field.isMousePressed()) {
                     field.setMousePressed(true);
                 }
             }
+
+            // Mouse released, G-Force will not be available anymore
             if (event.type == sf::Event::EventType::MouseButtonReleased) {
                 if (field.isMousePressed()) {
                     field.setMousePressed(false);

@@ -1,8 +1,9 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
-#include "simdart/Utils.h"
-#include "simdart/GUI.h"
+#include <spdlog/fwd.h>
+#include <simdart/Utils.h>
+#include <simdart/GUI.h>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH + 400, WINDOW_HEIGHT), "Particle system", sf::Style::Default);

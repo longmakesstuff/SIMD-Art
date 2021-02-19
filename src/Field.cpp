@@ -27,7 +27,7 @@ Field::Field() {
     load_texture();
 
     // Initialise particles' position
-    std::mt19937 rng;
+    std::mt19937 rng{};
     std::uniform_real_distribution<fpt> pos(400.0, 600.0);
     // Initialize random position
     for (uint32_t i = 0; i < n; i++) {
@@ -77,7 +77,7 @@ void Field::load_texture() {
 }
 
 void Field::simd_simulate() {
-    TimeIt simulation("SIMD Simulation");
+    //TimeIt simulation("SIMD Simulation");
 
     // Some constants
     fpt dt_2 = dt * dt;
@@ -200,11 +200,11 @@ void Field::simd_simulate() {
 
         }
     }
-    simulation.end();
+    //simulation.end();
 }
 
 void Field::naive_simulate() {
-    TimeIt simulation("Simulation");
+//TimeIt simulation("Simulation");
     fpt delta_t_2 = pow(dt, 2);
 
     // Iterate each particle
@@ -271,7 +271,7 @@ void Field::naive_simulate() {
         }
 
     }
-    simulation.end();
+    //simulation.end();
 }
 
 void Field::run(sf::RenderWindow *window) {
@@ -284,12 +284,12 @@ void Field::run(sf::RenderWindow *window) {
 
     simd_simulate();
 
-    TimeIt rendering("Rendering");
+    //TimeIt rendering("Rendering");
     vertex_buffer.update(vertices);
     window->draw(vertex_buffer);
     dt = clock.restart().asSeconds();
     window->display();
-    rendering.end();
+    //rendering.end();
 }
 
 bool Field::isMousePressed() const {

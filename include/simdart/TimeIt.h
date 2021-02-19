@@ -20,7 +20,7 @@ public:
 private:
     static uint32_t recursion_level;
     static bool closed_last_line;
-    bool closed_last_line_bkp;
+    bool closed_last_line_bkp{};
     std::chrono::steady_clock::time_point start_time;
     static void indent();
 };

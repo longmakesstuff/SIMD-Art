@@ -10,10 +10,13 @@
 #include <filesystem>
 #include "simdart/Utils.h"
 #include "simdart/TimeIt.h"
-#include "simdart/Simd.h"
+#include "simdart/SIMD.h"
 #include "simdart/FPS.h"
 #include "simdart/Field.h"
 
+/**
+ * GUI object
+ */
 class GUI {
 private:
     sf::RenderWindow *window;

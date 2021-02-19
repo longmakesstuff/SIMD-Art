@@ -8,7 +8,7 @@
 #include <array>
 #include "simdart/Utils.h"
 #include "simdart/TimeIt.h"
-#include "simdart/Simd.h"
+#include "simdart/SIMD.h"
 
 
 class Field {
@@ -71,6 +71,9 @@ class Field {
      */
     void simd_simulate();
 
+    /**
+     * Reloading texture for visual texture mapping
+     */
     void load_texture();
 
 public:
@@ -104,7 +107,7 @@ public:
 
     void setParticleMass(uint32_t particleMass);
 
-    const std::string &getTextureFile() const;
+    [[nodiscard]] const std::string &getTextureFile() const;
 
     void setTextureFile(const std::string &textureFile);
 };

@@ -3,6 +3,9 @@
 
 #include <SFML/System/Clock.hpp>
 
+/**
+ * FPS counter
+ */
 class FPS {
 public:
     FPS() : frame(0), fps(0) {}
