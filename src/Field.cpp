@@ -63,7 +63,7 @@ void Field::load_texture() {
         std::exit(1);
     }
 
-    if(image.getSize().x != WINDOW_WIDTH || image.getSize().y != WINDOW_HEIGHT) {
+    if (image.getSize().x != WINDOW_WIDTH || image.getSize().y != WINDOW_HEIGHT) {
         std::exit(1);
     }
 
@@ -118,47 +118,35 @@ void Field::simd_simulate() {
 
         if (mouse_pressed) {
             // Calculate distance
-            simd_fpt diff_pos_x_ = simd_sub(mouse_pos_x_, pos_x_);
-            simd_fpt diff_pos_y_ = simd_sub(mouse_pos_y_, pos_y_);
+            simd_fpt diff_pos_x_ = mouse_pos_x_ - pos_x_;
+            simd_fpt diff_pos_y_ = mouse_pos_y_ - pos_y_;
 
-            simd_fpt diff_pos_x_2_ = simd_mul(diff_pos_x_, diff_pos_x_);
-            simd_fpt diff_pos_y_2_ = simd_mul(diff_pos_y_, diff_pos_y_);
+            simd_fpt diff_pos_x_2_ = diff_pos_x_ * diff_pos_x_;
+            simd_fpt diff_pos_y_2_ = diff_pos_y_ * diff_pos_y_;
 
-            simd_fpt distance_ = simd_sqrt(_mm256_add_ps(diff_pos_x_2_, diff_pos_y_2_));
+            simd_fpt distance_ = simd_sqrt(diff_pos_x_2_ + diff_pos_y_2_);
             distance_ = simd_max(distance_, max_distances_);
-            simd_fpt distance_3_ = simd_mul(simd_mul(distance_, distance_), distance_);
+            simd_fpt distance_3_ = distance_ * distance_ * distance_;
 
             // Calculate g-force
-            g_force_x_ = simd_mul(mouse_mass_, simd_div(diff_pos_x_, distance_3_));
-            g_force_y_ = simd_mul(mouse_mass_, simd_div(diff_pos_y_, distance_3_));
-
-            g_force_x_ = simd_mul(g_force_x_, masses_);
-            g_force_y_ = simd_mul(g_force_y_, masses_);
+            g_force_x_ = mouse_mass_ * (diff_pos_x_ / distance_3_) * masses_;
+            g_force_y_ = mouse_mass_ * (diff_pos_y_ / distance_3_) * masses_;
 
             // Copy G-Force back to buffer
             std::memcpy(g_force_x, (fpt *) &g_force_x_, block_size * sizeof(fpt));
             std::memcpy(g_force_y, (fpt *) &g_force_y_, block_size * sizeof(fpt));
         }
 
-        // Calculating new positions
-        // TODO debug this procedure
-        //new_position_x_ = simd_div(simd_mul(c_0_5_, g_force_x_), simd_mul(masses_, dt_2_));
-        //new_position_x_ = simd_add(new_position_x_, simd_mul(v_x_, dt_));
-        //new_position_x_ = simd_add(new_position_x_, pos_x_);
+        simd_fpt new_position_x_s_ = pos_x_ + v_x_ * dt_ + c_0_5_ * g_force_x_ / masses_ * dt_2_;
+        simd_fpt new_position_y_s_ = pos_y_ + v_y_ * dt + c_0_5_ * g_force_y_ / masses_ * dt_2_;
 
-        //new_position_y_ = simd_div(simd_mul(c_0_5_, g_force_y_), simd_mul(masses_, dt_2_));
-        //new_position_y_ = simd_add(new_position_y_, simd_mul(v_y_, dt_));
-        //new_position_y_ = simd_add(new_position_y_, pos_y_);
-
-        //fpt * new_position_x_s = (fpt *)&new_position_x_;
-        //fpt * new_position_y_s = (fpt *)&new_position_y_;
+        fpt * new_position_x_s = (fpt *)&new_position_x_s_;
+        fpt * new_position_y_s = (fpt *)&new_position_y_s_;
 
         // Naively calculating next position since my CPU does not support mask SIMD
         for (uint32_t i = k; i < k + block_size; i++) {
-            fpt new_position_x = pos_x[i] + v_x[i] * dt + 0.5 * g_force_x[i - k] / masses[i] * dt_2;
-            fpt new_position_y = pos_y[i] + v_y[i] * dt + 0.5 * g_force_y[i - k] / masses[i] * dt_2;
-            //fpt new_position_x = new_position_x_s[i - k];
-            //fpt new_position_y = new_position_y_s[i - k];
+            auto new_position_x = new_position_x_s[i - k];
+            auto new_position_y = new_position_y_s[i - k];
 
             // Update position and speed
             if (new_position_x != pos_x[i]) {

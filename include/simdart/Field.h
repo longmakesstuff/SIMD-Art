@@ -28,7 +28,7 @@ class Field {
     static constexpr uint32_t block_size = 8;
 
     // How many blocks do we want to simulate
-    static constexpr uint32_t blocks = 100000;
+    static constexpr uint32_t blocks = 200000;
 
     // How many particles do we want to simulate
     static constexpr uint32_t n = block_size * blocks;
