@@ -153,16 +153,9 @@ void GUI::main_loop() {
                     field.setMousePressed(false);
                 }
             }
-
-            if (event.type == sf::Event::Resized) {
-                // adjust the viewport when the window is resized
-                glViewport(0, 0, event.size.width, event.size.height);
-            }
         }
 
         // Turn on this if your CPU does not support the operation
-        //naive_simulate();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (field.isTextureMapping()) {
             window->clear(sf::Color::White);
         } else {

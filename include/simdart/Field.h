@@ -49,11 +49,11 @@ class Field {
     std::string texture_file = "grumpy-cat.jpg";
 
     // Buffer for SIMD parallelization
-    alignas(32) fpt *pos_x;
-    alignas(32) fpt *pos_y;
-    alignas(32) fpt *v_x;
-    alignas(32) fpt *v_y;
-    alignas(32) fpt *masses;
+    fpt *pos_x;
+    fpt *pos_y;
+    fpt *v_x;
+    fpt *v_y;
+    fpt *masses;
 
     // Particle's graphical information
     sf::Color *colors;
@@ -61,12 +61,13 @@ class Field {
     sf::VertexBuffer vertex_buffer{sf::Points, sf::VertexBuffer::Static};
     sf::Vertex * vertices;
 
-    simd_fpt c_0_5_ = simd_set(0.5);
-    simd_fpt drag_ = simd_set(drag_coefficient);
-    simd_fpt max_distances_ = simd_set(minimal_distance);
-    simd_fpt zeros = simd_set(0.0);
-    simd_fpt height = simd_set(WINDOW_HEIGHT);
-    simd_fpt width = simd_set(WINDOW_WIDTH);
+    // SIMD constants
+    simd_fpt SIMD_HALF = simd_set(0.5);
+    simd_fpt SIMD_DRAG = simd_set(drag_coefficient);
+    simd_fpt SIMD_MIN_DISTANCE = simd_set(minimal_distance);
+    simd_fpt SIMD_ZEROS = simd_set(0.0);
+    simd_fpt SIMD_SCREEN_HEIGHT = simd_set(WINDOW_HEIGHT);
+    simd_fpt SIMD_SCREEN_WIDTH = simd_set(WINDOW_WIDTH);
 
 
     /**

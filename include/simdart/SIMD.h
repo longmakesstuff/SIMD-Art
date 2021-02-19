@@ -14,7 +14,7 @@ inline simd_fpt _mm256_load(const float *ptr) {
     return _mm256_set_ps(ptr[7], ptr[6], ptr[5], ptr[4], ptr[3], ptr[2], ptr[1], ptr[0]);
 }
 
-inline float reduce_add_ps(simd_fpt x) {
+inline float simd_reduce_add(const simd_fpt& x) {
     /* ( x3+x7, x2+x6, x1+x5, x0+x4 ) */
     const __m128 x128 = _mm_add_ps(_mm256_extractf128_ps(x, 1), _mm256_castps256_ps128(x));
     /* ( -, -, x1+x3+x5+x7, x0+x2+x4+x6 ) */
