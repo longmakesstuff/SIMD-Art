@@ -61,6 +61,14 @@ class Field {
     sf::VertexBuffer vertex_buffer{sf::Points, sf::VertexBuffer::Static};
     sf::Vertex * vertices;
 
+    simd_fpt c_0_5_ = simd_set(0.5);
+    simd_fpt drag_ = simd_set(drag_coefficient);
+    simd_fpt max_distances_ = simd_set(minimal_distance);
+    simd_fpt zeros = simd_set(0.0);
+    simd_fpt height = simd_set(WINDOW_HEIGHT);
+    simd_fpt width = simd_set(WINDOW_WIDTH);
+
+
     /**
      * Simulate naively with only thread level parallelization
      */

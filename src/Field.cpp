@@ -83,23 +83,16 @@ void Field::simd_simulate() {
     fpt dt_2 = dt * dt;
     simd_fpt dt_ = simd_set(dt);
     simd_fpt dt_2_ = simd_set(dt_2);
-    simd_fpt c_0_5_ = simd_set(0.5);
-    simd_fpt epsilon = simd_set(0.000001);
-    simd_fpt drag_ = simd_set(drag_coefficient);
-
-    // Maximal distance
-    simd_fpt max_distances_ = simd_set(minimal_distance);
 
     // Loading mass, position of mouse
     simd_fpt mouse_pos_x_ = simd_set(pos_x[n]);
     simd_fpt mouse_pos_y_ = simd_set(pos_y[n]);
     simd_fpt mouse_mass_ = simd_set(masses[n]);
 
-    constexpr uint32_t batch_size = 1;
+    constexpr uint32_t batch_size = 20;
 
 #pragma omp parallel for
     for (uint32_t block = 0; block < n; block += block_size * batch_size) {
-#pragma omp parallel for
         for (uint32_t batch_idx = 0; batch_idx < batch_size; batch_idx += 1) {
             uint32_t k = block + block_size * batch_idx;
 
@@ -108,20 +101,16 @@ void Field::simd_simulate() {
             simd_fpt g_force_y_ = simd_set(0.0);
             simd_fpt new_position_x_ = simd_load(pos_x + k);
             simd_fpt new_position_y_ = simd_load(pos_y + k);
-
+            // Loading current speed vectors
+            simd_fpt v_x_ = simd_load(v_x + k);
+            simd_fpt v_y_ = simd_load(v_y + k);
             // Loading current positions
             simd_fpt pos_x_ = simd_load(pos_x + k);
             simd_fpt pos_y_ = simd_load(pos_y + k);
 
-            // Loading current speed vectors
-            simd_fpt v_x_ = simd_load(v_x + k);
-            simd_fpt v_y_ = simd_load(v_y + k);
 
             // Loading masses
             simd_fpt masses_ = simd_load(masses + k);
-
-            fpt g_force_x[block_size]{0, 0, 0, 0, 0, 0, 0, 0};
-            fpt g_force_y[block_size]{0, 0, 0, 0, 0, 0, 0, 0};
 
             if (mouse_pressed) {
                 // Calculate distance
@@ -138,10 +127,6 @@ void Field::simd_simulate() {
                 // Calculate g-force
                 g_force_x_ = mouse_mass_ * (diff_pos_x_ / distance_3_) * masses_;
                 g_force_y_ = mouse_mass_ * (diff_pos_y_ / distance_3_) * masses_;
-
-                // Copy G-Force back to buffer
-                std::memcpy(g_force_x, (fpt *) &g_force_x_, block_size * sizeof(fpt));
-                std::memcpy(g_force_y, (fpt *) &g_force_y_, block_size * sizeof(fpt));
             }
 
             /*
@@ -151,21 +136,28 @@ void Field::simd_simulate() {
              * arithmetic exception. This works well enough for my case
              */
             simd_fpt new_position_x_s_ = pos_x_ + v_x_ * dt_ + c_0_5_ * g_force_x_ / masses_ * dt_2_;
-            simd_fpt new_position_y_s_ = pos_y_ + v_y_ * dt_ + c_0_5_ * g_force_y_ / masses_ * dt_2_;
-
             simd_fpt pos_diff_x = new_position_x_s_ - pos_x_;
-            simd_fpt pos_diff_y = new_position_y_s_ - pos_y_;
 
             if (reduce_add_ps(pos_diff_x) != 0.0f) {
+                simd_fpt new_position_y_s_ = pos_y_ + v_y_ * dt_ + c_0_5_ * g_force_y_ / masses_ * dt_2_;
+
+                // Wall collision
+                new_position_x_s_ = simd_min(new_position_x_s_, width);
+                new_position_x_s_ = simd_max(new_position_x_s_, zeros);
+                new_position_y_s_ = simd_min(new_position_y_s_, height);
+                new_position_y_s_ = simd_max(new_position_y_s_, zeros);
+
+                simd_fpt pos_diff_y = new_position_y_s_ - pos_y_;
+
                 simd_fpt new_speed_x = pos_diff_x / dt_;
                 new_speed_x = new_speed_x - new_speed_x * drag_;
-                std::memcpy(v_x + k, (fpt *) &new_speed_x, block_size * sizeof(fpt));
-                std::memcpy(pos_x + k, (fpt *) &new_position_x_s_, block_size * sizeof(fpt));
-            }
 
-            if (reduce_add_ps(pos_diff_y) != 0.0f) {
                 simd_fpt new_speed_y = pos_diff_y / dt_;
                 new_speed_y = new_speed_y - new_speed_y * drag_;
+
+                std::memcpy(v_x + k, (fpt *) &new_speed_x, block_size * sizeof(fpt));
+                std::memcpy(pos_x + k, (fpt *) &new_position_x_s_, block_size * sizeof(fpt));
+
                 std::memcpy(v_y + k, (fpt *) &new_speed_y, block_size * sizeof(fpt));
                 std::memcpy(pos_y + k, (fpt *) &new_position_y_s_, block_size * sizeof(fpt));
             }
@@ -174,31 +166,14 @@ void Field::simd_simulate() {
 
 #pragma omp parallel for
     for (uint32_t i = 0; i < n; i++) {
-        // Wall collision detect
-        if (pos_x[i] < 0) {
-            v_x[i] = -v_x[i];
-            pos_x[i] = 0;
-        } else if (pos_x[i] > WINDOW_WIDTH) {
-            v_x[i] = -v_x[i];
-            pos_x[i] = WINDOW_WIDTH;
-        }
-        if (pos_y[i] < 0) {
-            v_y[i] = -v_y[i];
-            pos_y[i] = 0;
-        } else if (pos_y[i] > WINDOW_HEIGHT) {
-            v_y[i] = -v_y[i];
-            pos_y[i] = WINDOW_HEIGHT;
-        }
-
-        // Update graphic with new data
         vertices[i].position.x = pos_x[i];
         vertices[i].position.y = pos_y[i];
-        colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
         if (!texture_mapping) {
+            // Update graphic with new data
+            colors[i].r = (255 - norm(sf::Vector2<fpt>{v_x[i], v_y[i]}));
             vertices[i].color = colors[i];
         } else {
-            vertices[i].color = texture[std::min((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i],
-                                            WINDOW_HEIGHT * WINDOW_HEIGHT)];
+            vertices[i].color = texture[std::min((uint32_t) pos_y[i] * WINDOW_HEIGHT + (uint32_t) pos_x[i], WINDOW_HEIGHT * WINDOW_HEIGHT)];
         }
     }
     simulation.end();

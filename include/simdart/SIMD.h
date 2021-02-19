@@ -33,5 +33,6 @@ constexpr auto simd_mul = _mm256_mul_ps;
 constexpr auto simd_div = _mm256_div_ps;
 constexpr auto simd_sqrt = _mm256_sqrt_ps;
 constexpr auto simd_max = _mm256_max_ps;
+constexpr auto simd_min = _mm256_min_ps;
 
 #endif //GRAVITATION_SIMD_H
